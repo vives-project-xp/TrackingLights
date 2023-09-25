@@ -18,6 +18,7 @@ while(True):
     ret, frame = cap.read()
 
     # resizing for faster detection
+    # find best resolution
     frame = cv2.resize(frame, (64*3, 128*3))
     # using a greyscale picture, also for faster detection
     gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
