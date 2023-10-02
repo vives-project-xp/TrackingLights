@@ -1,10 +1,10 @@
-
+import time
 # install opencv "pip install opencv-python"
 import cv2
 
 GREEN = (0, 255, 0)
 
-body_detector = cv2.CascadeClassifier('haarcascade_fullbody.xml')
+body_detector = cv2.CascadeClassifier('det/haarcascade_fullbody.xml')
 
 # initialize the camera object so that we
 # can get frame from it
@@ -18,7 +18,7 @@ cap = cv2.VideoCapture('mov/front.mov')
 # looping through frame, incoming from
 # camera/video
 while True:
-
+	time.sleep(0.05)
 	# reading the frame from camera
 	_, frame = cap.read()
 	
@@ -27,7 +27,7 @@ while True:
 	cv2.imshow("test", gray_image)
 
 	# detecting face in the image
-	body = body_detector.detectMultiScale(gray_image, scaleFactor=1.1, minNeighbors=2, minSize=(30, 100))
+	body = body_detector.detectMultiScale(gray_image, scaleFactor=1.6, minNeighbors=1, minSize=(50, 100))
 
 	# looping through the faces detect in the image
 	# getting coordinates x, y , width and height

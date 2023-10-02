@@ -1,9 +1,13 @@
 import cv2
+import time
 
 GREEN = (0, 255, 0)
+# initialize the HOG descriptor/person detector
+#hog = cv2.HOGDescriptor()
+#hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
-body_detector = cv2.CascadeClassifier('haarcascade_fullbody.xml')
-#body_detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+body_detector = cv2.CascadeClassifier('det/haarcascade_fullbody.xml')
+#body_detector = cv2.CascadeClassifier('det/haarcascade_frontalface_default.xml')
 # Initialize variables for MeanShift tracking
 track_window = None
 roi_hist = None
@@ -19,7 +23,7 @@ cap = cv2.VideoCapture('mov/front.mov')
 #cap = cv2.VideoCapture(0)
 
 while True:
-
+    time.sleep(0.10)    
     # reading the frame from camera
     _, frame = cap.read()
     
@@ -38,8 +42,7 @@ while True:
 
     else:
         # detecting bodies in the image
-        body = body_detector.detectMultiScale(gray_image, scaleFactor=1.1, minNeighbors=2, minSize=(30, 100))
-
+        body = body_detector.detectMultiScale(gray_image, scaleFactor=1.6, minNeighbors=1, minSize=(50, 100))
         # looping through the bodies detected in the image
         for (x, y, w, h) in body:
             cv2.rectangle(frame, (x, y), (x+w, y+h), GREEN, 2)
@@ -59,6 +62,7 @@ while True:
     # quit the program if you press 'q' on keyboard
     if cv2.waitKey(1) == ord("q"):
         break
+
 
 cap.release()
 
