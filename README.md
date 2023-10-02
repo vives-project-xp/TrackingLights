@@ -40,6 +40,13 @@ WLED: Since we did not find any excisting libraries for the tm1814(ledstrip), we
 
 Python: 
 
+Communication between devices:
+------------------------------------------------------------------
+<img width="460" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/991873ee-3a01-4c94-b453-779dc50f9773">
+
+
+
 Schematics + flowchart:
 ---------------------------------------------------------------------------------------------
+<img width="301" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/fb2391b4-63fa-4196-bb94-ee46ee5893ae">
 
