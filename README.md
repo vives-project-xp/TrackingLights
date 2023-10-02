@@ -48,5 +48,6 @@ Communication between devices:
 
 Schematics + flowchart:
 ---------------------------------------------------------------------------------------------
-<img width="301" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/fb2391b4-63fa-4196-bb94-ee46ee5893ae">
+<img width="415" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/17ba8875-df83-4def-9269-a39e10fa90e2">
+
 
