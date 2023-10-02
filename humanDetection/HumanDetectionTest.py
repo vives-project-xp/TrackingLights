@@ -11,7 +11,9 @@ cv2.startWindowThread()
 
 # open video stream
 # VideoCapture(0) == live camera view
-cap = cv2.VideoCapture('AlotPPL.mov')
+cap = cv2.VideoCapture('2DTest.mov')
+
+initialState = None  
 
 # Check if boxes are intersetcting 
 def doIntersect(box1, box2):
@@ -84,10 +86,10 @@ def non_max_suppression_fast(boxes, overlapThresh):
         xx2 = np.minimum(x2[i], x2[idxs[:last]])
         yy2 = np.minimum(y2[i], y2[idxs[:last]])
         # compute the width and height of the bounding box
-        
-        w = np.array(xx2 - xx1 + 1)
-        h = np.array(yy2 - yy1 + 1)
 
+        # need to fix maximum of next arrays
+        w = np.array(xx2 - xx1 + 1).astype("float")
+        h = np.array(yy2 - yy1 + 1).astype("float")
 
         print(xx2, xx1)
 
@@ -114,12 +116,42 @@ while(True):
 
     # resizing for faster detection
     # find best resolution
-    frame = cv2.resize(frame, (64*5, 128*5))
+    frame = cv2.resize(frame, (64*7, 128*5))
     # using a greyscale picture, also for faster detection
     gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
 
-    # detect people in the image
-    # returns the bounding boxes for the detected objects
+    #Testing with GrayTreshold
+    gray_frame = cv2.GaussianBlur(gray, (21, 21), 0)  
+
+
+   # For the first iteration checking the condition
+
+   # we will assign grayFrame to initalState if is none  
+
+    if initialState is None:  
+
+        initialState = gray_frame  
+
+        continue  
+
+        
+
+    # Calculation of difference between static or initial and gray frame we created  
+
+    differ_frame = cv2.absdiff(initialState, gray_frame)  
+
+    
+
+    # the change between static or initial background and current gray frame are highlighted 
+
+    
+
+    thresh_frame = cv2.threshold(differ_frame, 30, 255, cv2.THRESH_BINARY)[1]  
+
+    thresh_frame = cv2.dilate(thresh_frame, None, iterations = 2)  
+    
+        # detect people in the image
+        # returns the bounding boxes for the detected objects
     boxes, weights = hog.detectMultiScale(frame, winStride=(8,8) )
     
     highestCoefficientIndex = 0
@@ -154,6 +186,7 @@ while(True):
     # Display the resulting frame
     
     cv2.imshow('frame',frame)
+    cv2.imshow('treshold', thresh_frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
