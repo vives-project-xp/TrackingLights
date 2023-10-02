@@ -1,19 +1,33 @@
-#include <FastLED.h>
+#include <TM1814.h>
 
-#define NUM_LEDS 100 // Change this to the number of LEDs in your strip
-#define DATA_PIN 8 // Change this to the GPIO pin you're using
+#define PIN           6  // Define the pin connected to the data input of the LED strip
+#define NUM_LEDS      50 // Define the number of LEDs in your strip
 
-CRGB leds[NUM_LEDS];
+// Create an Adafruit_NeoPixel object
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_RGBW + NEO_KHZ800);
 
 void setup() {
-  FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
-  FastLED.setBrightness(64); // Adjust brightness (0-255)
+  // Initialize the strip
+  strip.begin();
+  strip.show();  // Initialize all pixels to 'off'
 }
 
 void loop() {
-  // Fill the entire strip with a single color
-  fill_solid(leds, NUM_LEDS, CRGB(255, 255, 255)); // Red
-  FastLED.show();
-  delay(1000); // Pause for a second
-  
+  // Set the entire strip to red
+  for (int i = 0; i < NUM_LEDS; i++) {
+    strip.setPixelColor(i, 255, 0, 0, 0);  // RGBW format: (R, G, B, W)
+  }
+  strip.show();
+
+  // Delay for a while (in milliseconds)
+  delay(1000);
+
+  // Turn off the entire strip
+  for (int i = 0; i < NUM_LEDS; i++) {
+    strip.setPixelColor(i, 0, 0, 0, 0);
+  }
+  strip.show();
+
+  // Delay again
+  delay(1000);
 }
