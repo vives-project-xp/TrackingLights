@@ -2,6 +2,10 @@
 Within this project we will create a LED strip that follows the passing people. This is made possible with a camera that tracks those people. This brings back life inside the hallways, we were motivated to start this project because it looked like a challenge. Throughout the project there is a lot of potential of learning new things.
 
 The lightstrip is 10 meters long. The strip itself is powered by an 24V powersupply and controlled by an ESP32, which, in turn, receives input from the raspberry pi. This raspberry pi is connected with a camera to monitor the light strip at the opposite side of the building. The camera and raspberry pi are hidden away behind glass. 
+Table of contents:
+-------------------------------------------------------------------------------------------------------
+...
+
 
 Required hardware: 
 ----------------------------------------------------------------------------------------------------------
@@ -49,6 +53,14 @@ Communication between devices:
 Schematics + flowchart:
 ---------------------------------------------------------------------------------------------
 <img width="365" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/e1646d3e-dcf6-453e-8a44-3fbecb16aee9">
+
+
+How to use the trackinglights:
+--------------------------------------------------------------------------------------------
+....
+
+
+
 
 
 
