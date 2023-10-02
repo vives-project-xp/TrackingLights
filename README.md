@@ -1,5 +1,5 @@
 ﻿# TrackingLights
-Within this project we will create a ledstrip that follows the passing people. This is made possible with a camera that tracks those people.
+Within this project we will create a LED strip that follows the passing people. This is made possible with a camera that tracks those people. This brings back life inside the hallways, we were motivated to start this project because it looked like a challenge. Throughout the project there is a lot of potential of learning new things.
 
 The lightstrip is 10m. The strip itself is powered by an 24V powersupply, and controlled by an ESP32. Which at his turn get's input from the raspberry pi. This raspberry pi is connected with a camera to monitor the lightstrip at the opposite side of the building. The camera and raspberry pi are hidden away behind glass. 
 
