@@ -1,58 +1,73 @@
-import cv2
+# import the necessary packages
 import numpy as np
+import cv2
+import time
 
-# Function to detect motion and generate black and white mask
+np.set_printoptions(suppress=True)
 
+cv2.startWindowThread()
 
-def detect_motion(frame1, frame2, threshold=30):
-    delta_frame = cv2.absdiff(frame1, frame2)
-    gray_frame = cv2.cvtColor(delta_frame, cv2.COLOR_BGR2GRAY)
-    _, threshold_frame = cv2.threshold(gray_frame, threshold, 255, cv2.THRESH_BINARY)
-    return threshold_frame
-
-
-# Load video file
+# open video stream
+# VideoCapture(0) == live camera view
 cap = cv2.VideoCapture('mov/hallway1.mov')
 
-# Read the first frame
-ret, first_frame = cap.read()
+initialState = None  
 
-# Process video frames
-while True:
+while(True): 
+    time.sleep(0.04)
+    # Capture frame-by-frame
     ret, frame = cap.read()
+    # find best resolution
+    width = 640
+    height = 360    
+    # resizing for faster detection
+    frame = cv2.resize(frame, (width, height))
+    # Enhance brightness (increase all pixel values)
+    bright_frame = cv2.convertScaleAbs(frame, alpha=2.2, beta=15)
+    # using a greyscale picture, also for faster detection
+    gray = cv2.cvtColor(bright_frame, cv2.COLOR_RGB2GRAY)
 
-    if not ret:
-        break
+    # set gray threshold
+    gray_frame = cv2.GaussianBlur(gray, (15, 1), 12)  
 
-    # Convert frames to grayscale and apply GaussianBlur for better results
-    gray_frame1 = cv2.cvtColor(first_frame, cv2.COLOR_BGR2GRAY)
-    gray_frame2 = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    gray_frame1 = cv2.GaussianBlur(gray_frame1, (21, 21), 0)
-    gray_frame2 = cv2.GaussianBlur(gray_frame2, (21, 21), 0)
+   # For the first iteration checking the condition
 
-    # Get the motion detection mask
-    motion_mask = detect_motion(gray_frame1, gray_frame2)
+   # we will assign grayFrame to initalState if is none  
 
-    # Find contours of moving objects
-    contours, _ = cv2.findContours(motion_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if initialState is None:  
 
-    # Create black and white image with moving areas
-    moving_areas = np.zeros_like(frame)
-    cv2.drawContours(moving_areas, contours, -1, (255, 255, 255), thickness=cv2.FILLED)
+        initialState = gray_frame  
+        continue  
 
-    # Display the moving areas
-    cv2.imshow('Moving Areas', moving_areas)
+    # Calculation of difference between static or initial and gray frame we created  
 
-    # Show the original video with moving areas highlighted
-    cv2.imshow('Original Video with Moving Areas', cv2.add(frame, moving_areas))
+    differ_frame = cv2.absdiff(initialState, gray_frame)  
 
-    # Exit if 'q' is pressed
+    # the change between static or initial background and current gray frame are highlighted 
+
+    thresh_frame = cv2.threshold(differ_frame, 30, 255, cv2.THRESH_BINARY)[1]  
+
+    thresh_frame = cv2.dilate(thresh_frame, None, iterations = 2)  
+    
+    lineHeight = 215
+
+    # check for white pixels on line (moving objects)
+    # and draw rectangle at this place
+    for i in range(0,width):
+        if thresh_frame[lineHeight][i] == 255:
+            cv2.rectangle(frame, (i-3,lineHeight-3), (i+3,lineHeight+3),(0,0,255) )
+
+    # draw guidline which pixels are checked
+    cv2.line(frame, (0,lineHeight), (width,lineHeight), (0,255,0),thickness=1)
+    
+    cv2.imshow('frame',frame)
+    cv2.imshow('gray_frame',gray_frame)
+    cv2.imshow('threshold', thresh_frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-    # Update the first frame
-    first_frame = frame.copy()
-
-# Release video capture and close windows
+# When everything done, release the capture
 cap.release()
+# finally, close the window
 cv2.destroyAllWindows()
+cv2.waitKey(1)
