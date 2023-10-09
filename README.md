@@ -58,7 +58,7 @@ Schematics + flowchart:
 ---------------------------------------------------------------------------------------------
 <img width="293" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/61e99522-55ce-46ce-83c7-ac4cafe26142">
 
-<img width="365" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/e1646d3e-dcf6-453e-8a44-3fbecb16aee9">
+
 
 
 How to use the trackinglights:
