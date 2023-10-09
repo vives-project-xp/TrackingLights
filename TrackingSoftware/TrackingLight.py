@@ -2,7 +2,13 @@
 import numpy as np
 import cv2
 import time
+import paho.mqtt.client as mqtt
 
+# Set up MQTT client
+mqtt_client = mqtt.Client()
+mqtt_client.connect("mqtt.devbit.be", 1883, 60)
+
+leds = [0]
 np.set_printoptions(suppress=True)
 
 cv2.startWindowThread()
@@ -18,7 +24,7 @@ while(True):
     # Capture frame-by-frame
     ret, frame = cap.read()
     # find best resolution
-    width = 640
+    width = 600
     height = 360    
     # resizing for faster detection
     frame = cv2.resize(frame, (width, height))
@@ -50,12 +56,26 @@ while(True):
     thresh_frame = cv2.dilate(thresh_frame, None, iterations = 2)  
     
     lineHeight = 215
+    # Create a copy of the 'leds' list
+    leds_copy = []
 
     # check for white pixels on line (moving objects)
     # and draw rectangle at this place
     for i in range(0,width):
         if thresh_frame[lineHeight][i] == 255:
+            if i % 6 == 0:
+                leds_copy.append(1)
             cv2.rectangle(frame, (i-3,lineHeight-3), (i+3,lineHeight+3),(0,0,255) )
+        else:
+            if i % 6 == 0:
+                leds_copy.append(0)
+
+    # Now assign the modified 'leds_copy' back to 'leds'
+    leds = leds_copy
+    mqtt_client.publish("topic/leds", str(leds))
+    print(str(leds))
+    print("The array is " + str(len(leds)) + " long \n")
+    leds_copy*=0
 
     # draw guidline which pixels are checked
     cv2.line(frame, (0,lineHeight), (width,lineHeight), (0,255,0),thickness=1)
@@ -68,6 +88,8 @@ while(True):
 
 # When everything done, release the capture
 cap.release()
+# Disconnect from MQTT broker
+mqtt_client.disconnect()
 # finally, close the window
 cv2.destroyAllWindows()
 cv2.waitKey(1)
