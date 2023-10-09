@@ -17,6 +17,8 @@ Esp32: This is used to control the led's. The ESP receives data from the raspber
 
 Power supply led's + Esp32: Here we used a 24V+15A power supply, since the esp32 draws power (5v) from the leds we don't need to make any adaptations to power it. The led's have an average usage of 5A. So by using a power supply which could supply 15A, we have room for error.
 
+24V-5V converter: Since the ESP32 runs on 5V, a converter is placed between the power supply of the leds and the ESP32.
+
 raspberry pi: This will convert the raw footage from the camera into values, which will be send to the ESP.
 
 Camera: For the camera we chose the raspberry pi camera V2. The V2 is an 8mp camera with the sony IMX219 sensor, the camera is easy to work with but has potential for more complicated things. This will connect to the raspberry pi.
@@ -54,6 +56,8 @@ Communication between devices:
 
 Schematics + flowchart:
 ---------------------------------------------------------------------------------------------
+<img width="293" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/61e99522-55ce-46ce-83c7-ac4cafe26142">
+
 <img width="365" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/e1646d3e-dcf6-453e-8a44-3fbecb16aee9">
 
 
