@@ -32,7 +32,7 @@ while(True):
     # resizing for faster detection
     frame = cv2.resize(frame, (width, height))
     # Enhance brightness (increase all pixel values)
-    bright_frame = cv2.convertScaleAbs(frame, alpha=2.2, beta=15)
+    bright_frame = cv2.convertScaleAbs(frame, alpha=1, beta=20)
     # using a greyscale picture, also for faster detection
     gray = cv2.cvtColor(bright_frame, cv2.COLOR_RGB2GRAY)
 
@@ -54,7 +54,7 @@ while(True):
 
     # the change between static or initial background and current gray frame are highlighted 
 
-    thresh_frame = cv2.threshold(differ_frame, 30, 255, cv2.THRESH_BINARY)[1]  
+    thresh_frame = cv2.threshold(differ_frame, 15, 255, cv2.THRESH_BINARY)[1]  
 
     thresh_frame = cv2.dilate(thresh_frame, None, iterations = 2)  
     
@@ -87,7 +87,7 @@ while(True):
     cv2.line(frame, (0,lineHeight), (width,lineHeight), (0,255,0),thickness=1)
     
     cv2.imshow('frame',frame)
-    cv2.imshow('gray_frame',gray_frame)
+    # cv2.imshow('gray_frame',gray_frame)
     cv2.imshow('threshold', thresh_frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
