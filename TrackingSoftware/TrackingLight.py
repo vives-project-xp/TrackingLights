@@ -25,7 +25,7 @@ fgbg = cv2.createBackgroundSubtractorMOG2()
 initialState = None  
 
 while(True): 
-    time.sleep(0.02)
+    time.sleep(0.0)
     # Capture frame-by-frame
     ret, frame = cap.read()
     # find best resolution
@@ -78,12 +78,12 @@ while(True):
                 leds_copy.append(0)
 
     # Now assign the modified 'leds_copy' back to 'leds'
- # Inside the loop, after motion detection and before publishing to MQTT
+    # Inside the loop, after motion detection and before publishing to MQTT
 
-    # data['leds'] = leds_copy
-    # json_data = json.dumps(data)  # Convert the dictionary to a JSON string
-    # mqtt_client.publish("topic/TrackingLights/cameraDetectionArray", json_data)
-    # print(json_data)
+    data['leds'] = leds_copy
+    json_data = json.dumps(data)  # Convert the dictionary to a JSON string
+    mqtt_client.publish("topic/TrackingLights/cameraDetectionArray", json_data)
+    print(json_data)
 
     leds_copy*=0
 
