@@ -13,7 +13,7 @@ mqtt_client.connect("mqtt.devbit.be", 1883, 60)
 ledsData = {'leds': [0]}
 
 # Define initial data dictionary for brightness and color values
-data = {'on': True , 'seg': 0, 'bri': 255, 'col': [255, 255, 255]}
+data = {'on': True , 'bri': 255, 'seg': {'i':[[255,255,255], [255,255,255], [255,255,255]]}}
 
 np.set_printoptions(suppress=True)
 
@@ -30,7 +30,7 @@ initialState = None
 # Define MQTT topics for brightness and color
 brightness_topic = "TrackingLights/brightness"
 color_topic = "TrackingLights/color"
-
+count = 0
 # Define callback functions for MQTT
 def on_brightness_message(client, userdata, message):
     data['bri'] = int(message.payload.decode())
@@ -47,7 +47,7 @@ mqtt_client.message_callback_add(brightness_topic, on_brightness_message)
 mqtt_client.message_callback_add(color_topic, on_color_message)
 
 while(True): 
-    time.sleep(0.05)
+    time.sleep(0.00)
     # Capture frame-by-frame
     ret, frame = cap.read()
     # find best resolution
@@ -87,30 +87,29 @@ while(True):
     headLineHeight = 181
     # Create a copy of the 'leds' list
     leds_copy = []
+    i_color = [255, 255, 255]
 
     # check for white pixels on line (moving objects)
     # and draw rectangle at this place
     for i in range(0,width, 6):
         if thresh_frame[baseLineHeight][i] == 255 or thresh_frame[headLineHeight][i] == 255:
-            leds_copy.append(1)
-            data['col']  = 224, 0, 32
+            leds_copy.append([224, 0, 32])
             cv2.rectangle(frame, (i-3,baseLineHeight-3), (i+3,baseLineHeight+3),(0,0,255) )
         else:
-            leds_copy.append(0)
-            data['col']  = 255, 255, 255
-
-
-
+            leds_copy.append([255,255,255])
+        
+    i_color = leds_copy
+    data['seg']['i'] = i_color
+    json_data = json.dumps(data)  
     
-
-        data['seg'] = i / 6
-        json_data = json.dumps(data)  
-        mqtt_client.publish("TrackingLights/leddriver/api", json_data)
+    #if(count % 2 == 0):
+    mqtt_client.publish("TrackingLights/leddriver/api", json_data)
+    #count = count + 1
 
     # Now assign the modified 'leds_copy' back to 'leds'
     ledsData['leds'] = leds_copy
     ledsArray = json.dumps(ledsData)  # Convert the dictionary to a JSON string
-    mqtt_client.publish("TrackingLights/cameraDetectionArray", ledsArray)
+    #mqtt_client.publish("TrackingLights/cameraDetectionArray", ledsArray)
 
     leds_copy*=0
 
@@ -135,3 +134,4 @@ mqtt_client.disconnect()
 # Finally, close the window
 cv2.destroyAllWindows()
 cv2.waitKey(1)
+
