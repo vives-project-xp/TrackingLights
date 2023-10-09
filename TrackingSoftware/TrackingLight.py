@@ -3,24 +3,27 @@ import numpy as np
 import cv2
 import time
 import paho.mqtt.client as mqtt
+import json
+
 
 # Set up MQTT client
 mqtt_client = mqtt.Client()
 mqtt_client.connect("mqtt.devbit.be", 1883, 60)
 
-leds = [0]
+data = {'leds': [0]}
+
 np.set_printoptions(suppress=True)
 
 cv2.startWindowThread()
 
 # open video stream
 # VideoCapture(0) == live camera view
-cap = cv2.VideoCapture('mov/hallway1.mov')
+cap = cv2.VideoCapture('mov/hallway2.mov')
 
 initialState = None  
 
 while(True): 
-    time.sleep(0.04)
+    time.sleep(0.00)
     # Capture frame-by-frame
     ret, frame = cap.read()
     # find best resolution
@@ -71,10 +74,13 @@ while(True):
                 leds_copy.append(0)
 
     # Now assign the modified 'leds_copy' back to 'leds'
-    leds = leds_copy
-    mqtt_client.publish("topic/leds", str(leds))
-    print(str(leds))
-    print("The array is " + str(len(leds)) + " long \n")
+ # Inside the loop, after motion detection and before publishing to MQTT
+
+    data['leds'] = leds_copy
+    json_data = json.dumps(data)  # Convert the dictionary to a JSON string
+    mqtt_client.publish("topic/TrackingLights/cameraDetectionArray", json_data)
+    print(json_data)
+
     leds_copy*=0
 
     # draw guidline which pixels are checked

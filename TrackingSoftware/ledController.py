@@ -2,7 +2,7 @@ import paho.mqtt.client as mqtt
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
-    client.subscribe("topic/leds")  # Subscribe to the topic where the array is being published
+    client.subscribe("topic/TrackingLights/cameraDetectionArray")  # Subscribe to the topic where the array is being published
 
 def on_message(client, userdata, msg):
     print(f"Received message: {msg.payload}")
