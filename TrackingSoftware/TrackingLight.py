@@ -13,7 +13,7 @@ mqtt_client.connect("mqtt.devbit.be", 1883, 60)
 ledsData = {'leds': [0]}
 
 # Define initial data dictionary for brightness and color values
-data = {'on': True , 'seg': 0, 'bri': 100, 'col': [255, 255, 255]}
+data = {'on': True , 'seg': 0, 'bri': 255, 'col': [255, 255, 255]}
 
 np.set_printoptions(suppress=True)
 
@@ -28,8 +28,8 @@ fgbg = cv2.createBackgroundSubtractorMOG2()
 initialState = None  
 
 # Define MQTT topics for brightness and color
-brightness_topic = "topic/TrackingLights/brightness"
-color_topic = "topic/TrackingLights/color"
+brightness_topic = "TrackingLights/brightness"
+color_topic = "TrackingLights/color"
 
 # Define callback functions for MQTT
 def on_brightness_message(client, userdata, message):
@@ -105,12 +105,12 @@ while(True):
 
         data['seg'] = i / 6
         json_data = json.dumps(data)  
-        mqtt_client.publish("topic/TrackingLights/leddriver/api", json_data)
+        mqtt_client.publish("TrackingLights/leddriver/api", json_data)
 
     # Now assign the modified 'leds_copy' back to 'leds'
     ledsData['leds'] = leds_copy
     ledsArray = json.dumps(ledsData)  # Convert the dictionary to a JSON string
-    mqtt_client.publish("topic/TrackingLights/cameraDetectionArray", ledsArray)
+    mqtt_client.publish("TrackingLights/cameraDetectionArray", ledsArray)
 
     leds_copy*=0
 
