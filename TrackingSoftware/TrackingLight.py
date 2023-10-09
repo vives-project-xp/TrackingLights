@@ -23,6 +23,8 @@ cv2.startWindowThread()
 # VideoCapture(0) == live camera view
 cap = cv2.VideoCapture('mov/hallway1.mov')
 
+fgbg = cv2.createBackgroundSubtractorMOG2()
+
 initialState = None  
 
 # Define MQTT topics for brightness and color
@@ -45,7 +47,9 @@ mqtt_client.message_callback_add(brightness_topic, on_brightness_message)
 mqtt_client.message_callback_add(color_topic, on_color_message)
 
 while(True): 
-    time.sleep(0.05)
+
+    time.sleep(0.0)
+
     # Capture frame-by-frame
     ret, frame = cap.read()
     # find best resolution
@@ -53,24 +57,31 @@ while(True):
     height = 360    
     # resizing for faster detection
     frame = cv2.resize(frame, (width, height))
+    
+    # apply background subtraction
+    fgmask = fgbg.apply(frame, None, 0) 
     # Enhance brightness (increase all pixel values)
-    bright_frame = cv2.convertScaleAbs(frame, alpha=2.2, beta=15)
-    # using a greyscale picture, also for faster detection
-    gray = cv2.cvtColor(bright_frame, cv2.COLOR_RGB2GRAY)
+    # bright_frame = cv2.convertScaleAbs(frame, alpha=1, beta=20)
 
-    # set gray threshold
-    gray_frame = cv2.GaussianBlur(gray, (15, 5), 15)  
 
-    # For the first iteration checking the condition
+    # Blur out the edges
+    gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)  
+
+   # For the first iteration checking the condition
+
+   # we will assign grayFrame to initalState if is none  
+
     if initialState is None:  
         initialState = gray_frame  
         continue  
 
     # Calculation of difference between static or initial and gray frame we created  
-    differ_frame = cv2.absdiff(initialState, gray_frame)  
+
 
     # the change between static or initial background and current gray frame are highlighted 
-    thresh_frame = cv2.threshold(differ_frame, 30, 255, cv2.THRESH_BINARY)[1]  
+
+    thresh_frame = cv2.threshold(gray_frame, 150, 255, cv2.THRESH_BINARY)[1]  
+
 
     thresh_frame = cv2.dilate(thresh_frame, None, iterations = 2)  
     
@@ -89,6 +100,10 @@ while(True):
         else:
             leds_copy.append(0)
             data['col']  = 255, 255, 255
+
+
+
+    
 
         data['seg'] = i / 6
         json_data = json.dumps(data)  
@@ -110,8 +125,8 @@ while(True):
     cv2.line(thresh_frame, (0,headLineHeight), (width,headLineHeight), (255,255,255),thickness=1)
 
     cv2.imshow('frame',frame)
-    cv2.imshow('gray_frame',gray_frame)
     cv2.imshow('threshold', thresh_frame)
+    cv2.imshow('backgroundDiff', fgmask)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
