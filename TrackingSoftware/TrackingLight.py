@@ -13,7 +13,7 @@ mqtt_client.connect("mqtt.devbit.be", 1883, 60)
 ledsData = {'leds': [0]}
 
 # Define initial data dictionary for brightness and color values
-data = {'seg': 0, 'bri': 100, 'col': [255, 255, 255]}
+data = {'on': True , 'seg': 0, 'bri': 100, 'col': [255, 255, 255]}
 
 np.set_printoptions(suppress=True)
 
@@ -45,7 +45,7 @@ mqtt_client.message_callback_add(brightness_topic, on_brightness_message)
 mqtt_client.message_callback_add(color_topic, on_color_message)
 
 while(True): 
-    time.sleep(0.05)
+    time.sleep(0.00)
     # Capture frame-by-frame
     ret, frame = cap.read()
     # find best resolution
@@ -122,7 +122,3 @@ mqtt_client.disconnect()
 # Finally, close the window
 cv2.destroyAllWindows()
 cv2.waitKey(1)
-
-
-
-rgb(224,0,32)
