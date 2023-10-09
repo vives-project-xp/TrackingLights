@@ -37,7 +37,7 @@ while(True):
     gray = cv2.cvtColor(bright_frame, cv2.COLOR_RGB2GRAY)
 
     # set gray threshold
-    gray_frame = cv2.GaussianBlur(gray, (15, 1), 12)  
+    gray_frame = cv2.GaussianBlur(gray, (21, 21), 0)  
 
    # For the first iteration checking the condition
 
@@ -64,8 +64,8 @@ while(True):
 
     # check for white pixels on line (moving objects)
     # and draw rectangle at this place
-    for i in range(0,width):
-        if thresh_frame[lineHeight][i] == 255:
+    for i in range(0,width, 3):
+        if thresh_frame[lineHeight][i] == 255 or thresh_frame[181][i]==255:
             if i % 6 == 0:
                 leds_copy.append(1)
             cv2.rectangle(frame, (i-3,lineHeight-3), (i+3,lineHeight+3),(0,0,255) )
@@ -78,7 +78,7 @@ while(True):
 
     data['leds'] = leds_copy
     json_data = json.dumps(data)  # Convert the dictionary to a JSON string
-    mqtt_client.publish("topic/TrackingLights/cameraDetectionArray", json_data)
+    # mqtt_client.publish("topic/TrackingLights/cameraDetectionArray", json_data)
     print(json_data)
 
     leds_copy*=0
