@@ -54,7 +54,7 @@ def on_on_off_message(client, userdata, message):
 
 # Define callback functions for MQTT
 def on_preset_message(client, userdata, message):
-    data['preset'] = int(message.payload.decode())
+    preset['pr'] = int(message.payload.decode())
     print(*message.topic,str(message.payload.decode()))
 
 
@@ -133,7 +133,13 @@ while(True):
     #ledsData['leds'] = leds_copy
     #ledsArray = json.dumps(ledsData) 
     #mqtt_client.publish("TrackingLights/cameraDetectionArray", ledsArray)
+
+    json_data = json.dumps(data)  
     leds_copy*=0
+    
+    #if(count % 2 == 0):
+    mqtt_client.publish("TrackingLights/leddriver/api", json_data)
+    #count = count + 1
 
     # draw guideline which pixels are checked
     cv2.line(frame, (0,baseLineHeight), (width,baseLineHeight), (0,255,0),thickness=1)
@@ -149,11 +155,6 @@ while(True):
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-
-    json_data = json.dumps(data)  
-    #if(count % 2 == 0):
-    mqtt_client.publish("TrackingLights/leddriver/api", json_data)
-    #count = count + 1
 
 # When everything is done, release the capture
 cap.release()
