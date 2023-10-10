@@ -47,15 +47,14 @@ mqtt_client.message_callback_add(brightness_topic, on_brightness_message)
 mqtt_client.message_callback_add(color_topic, on_color_message)
 
 while(True): 
-    time.sleep(0.00)
+    time.sleep(0.05)
     # Capture frame-by-frame
     ret, frame = cap.read()
     # find best resolution
-    width = 600
-    height = 360    
+    width = 600 # *3
+    height = 360 # *3
     # resizing for faster detection
     frame = cv2.resize(frame, (width, height))
-    
     # apply background subtraction
     fgmask = fgbg.apply(frame, None, 0) 
     # Enhance brightness (increase all pixel values)
@@ -82,7 +81,8 @@ while(True):
 
 
     thresh_frame = cv2.dilate(thresh_frame, None, iterations = 2)  
-    
+        
+    #baseLineHeight = 645
     baseLineHeight = 215
     headLineHeight = 181
     # Create a copy of the 'leds' list
@@ -121,7 +121,7 @@ while(True):
     cv2.line(thresh_frame, (0,baseLineHeight), (width,baseLineHeight), (255,255,255),thickness=1)
     cv2.line(thresh_frame, (0,headLineHeight), (width,headLineHeight), (255,255,255),thickness=1)
 
-    cv2.imshow('frame',frame)
+    cv2.imshow('frame', frame)
     cv2.imshow('threshold', thresh_frame)
     cv2.imshow('backgroundDiff', fgmask)
     if cv2.waitKey(1) & 0xFF == ord('q'):
