@@ -1,4 +1,3 @@
-# import the necessary packages
 import numpy as np
 import cv2
 import time
@@ -9,28 +8,20 @@ import json
 mqtt_client = mqtt.Client()
 mqtt_client.connect("mqtt.devbit.be", 1883, 60)
 
-# Define initial LED data dictionary
-ledsData = {'leds': [0]}
-
-# Define initial data dictionary for brightness and color values
-data = {'on': True , 'bri': 255, 'seg': {'i':[[255,255,255], [255,255,255], [255,255,255]]}}
-
-np.set_printoptions(suppress=True)
-
-cv2.startWindowThread()
-
-# open video stream
-# VideoCapture(0) == live camera view
-cap = cv2.VideoCapture('mov/hallway1.mov')
-
-fgbg = cv2.createBackgroundSubtractorMOG2()
-
-initialState = None  
-
 # Define MQTT topics for brightness and color
 brightness_topic = "TrackingLights/brightness"
 color_topic = "TrackingLights/color"
-count = 0
+
+# Define initial LED data dictionary
+#ledsData = {'leds': [0]}
+
+# Define initial data dictionary for brightness and color values
+data = {
+    'on': True,
+    'bri': 255,
+    'seg': {'i':[[255,255,255], [255,255,255], [255,255,255]]}
+}
+
 # Define callback functions for MQTT
 def on_brightness_message(client, userdata, message):
     data['bri'] = int(message.payload.decode())
@@ -46,10 +37,21 @@ mqtt_client.subscribe(color_topic)
 mqtt_client.message_callback_add(brightness_topic, on_brightness_message)
 mqtt_client.message_callback_add(color_topic, on_color_message)
 
+# Initialize video capture
+cap = cv2.VideoCapture('mov/hallway2.mov')
+
+# Create a background subtractor
+fgbg = cv2.createBackgroundSubtractorMOG2()
+
+# Initialize initialState
+initialState = None
+
 while(True): 
+
     time.sleep(0.05)
     # Capture frame-by-frame
     ret, frame = cap.read()
+
     # find best resolution
     width = 600 # *3
     height = 360 # *3
@@ -58,33 +60,22 @@ while(True):
     # apply background subtraction
     fgmask = fgbg.apply(frame, None, 0) 
     # Enhance brightness (increase all pixel values)
-    # bright_frame = cv2.convertScaleAbs(frame, alpha=1, beta=20)
-
-
+    bright_frame = cv2.convertScaleAbs(fgmask, alpha=1, beta=20)
     # Blur out the edges
-    gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)  
-
-   # For the first iteration checking the condition
+    gray_frame = cv2.GaussianBlur(bright_frame, (21,21), 0)  
 
    # we will assign grayFrame to initalState if is none  
-
     if initialState is None:  
         initialState = gray_frame  
         continue  
 
-    # Calculation of difference between static or initial and gray frame we created  
-
-
-    # the change between static or initial background and current gray frame are highlighted 
-
     thresh_frame = cv2.threshold(gray_frame, 150, 255, cv2.THRESH_BINARY)[1]  
-
-
     thresh_frame = cv2.dilate(thresh_frame, None, iterations = 2)  
         
     #baseLineHeight = 645
     baseLineHeight = 215
     headLineHeight = 181
+
     # Create a copy of the 'leds' list
     leds_copy = []
     i_color = [255, 255, 255]
@@ -107,10 +98,9 @@ while(True):
     #count = count + 1
 
     # Now assign the modified 'leds_copy' back to 'leds'
-    ledsData['leds'] = leds_copy
-    ledsArray = json.dumps(ledsData)  # Convert the dictionary to a JSON string
+    #ledsData['leds'] = leds_copy
+    #ledsArray = json.dumps(ledsData) 
     #mqtt_client.publish("TrackingLights/cameraDetectionArray", ledsArray)
-
     leds_copy*=0
 
     # draw guideline which pixels are checked
