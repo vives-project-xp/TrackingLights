@@ -11,31 +11,65 @@ mqtt_client.connect("mqtt.devbit.be", 1883, 60)
 # Define MQTT topics for brightness and color
 brightness_topic = "TrackingLights/brightness"
 color_topic = "TrackingLights/color"
+on_off_topic = "TrackingLights/on_off"
+preset_topic = "TrackingLights/preset"
 
 # Define initial LED data dictionary
 #ledsData = {'leds': [0]}
 
-# Define initial data dictionary for brightness and color values
+# Define initial data dictionary for brightness and color values 
+# We have 100 segments 
 data = {
     'on': True,
     'bri': 255,
-    'seg': {'i':[[255,255,255], [255,255,255], [255,255,255]]}
+    'seg': {'i':[[255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],]}
 }
+
+color = {'color' : [255, 255, 255]}
+preset = {'pr': 1}
 
 # Define callback functions for MQTT
 def on_brightness_message(client, userdata, message):
     data['bri'] = int(message.payload.decode())
+    print(*message.topic,str(message.payload.decode()))
 
 def on_color_message(client, userdata, message):
-    data['col'] = json.loads(message.payload.decode())
+    color['color'] = json.loads(message.payload.decode())
+    print(*message.topic,str(message.payload.decode()))
+
+
+def on_on_off_message(client, userdata, message):
+    data['on'] = json.loads(message.payload.decode())
+    print(*message.topic,str(message.payload.decode()))
+
+
+# Define callback functions for MQTT
+def on_preset_message(client, userdata, message):
+    data['preset'] = int(message.payload.decode())
+    print(*message.topic,str(message.payload.decode()))
+
 
 # Subscribe to MQTT topics
 mqtt_client.subscribe(brightness_topic)
 mqtt_client.subscribe(color_topic)
+mqtt_client.subscribe(on_off_topic)
+mqtt_client.subscribe(preset_topic)
 
 # Set MQTT callbacks
 mqtt_client.message_callback_add(brightness_topic, on_brightness_message)
 mqtt_client.message_callback_add(color_topic, on_color_message)
+mqtt_client.message_callback_add(on_off_topic, on_on_off_message)
+mqtt_client.message_callback_add(preset_topic, on_preset_message)
+
 
 # Initialize video capture
 cap = cv2.VideoCapture('mov/hallway2.mov')
@@ -45,6 +79,9 @@ fgbg = cv2.createBackgroundSubtractorMOG2()
 
 # Initialize initialState
 initialState = None
+
+white = [255, 255, 255]
+detected_color = [244, 0, 32] # vives_red as base
 
 while(True): 
 
@@ -78,24 +115,19 @@ while(True):
 
     # Create a copy of the 'leds' list
     leds_copy = []
-    i_color = [255, 255, 255]
+    i_color = white
 
     # check for white pixels on line (moving objects)
     # and draw rectangle at this place
     for i in range(0,width, 6):
         if thresh_frame[baseLineHeight][i] == 255 or thresh_frame[headLineHeight][i] == 255:
-            leds_copy.append([224, 0, 32])
-            cv2.rectangle(frame, (i-3,baseLineHeight-3), (i+3,baseLineHeight+3),(0,0,255) )
+            leds_copy.append(detected_color)
+            cv2.rectangle(frame, (i-3,baseLineHeight-3), (i+3,baseLineHeight+3), list(reversed(detected_color)) ,-1)
         else:
-            leds_copy.append([255,255,255])
+            leds_copy.append(white)
         
     i_color = leds_copy
     data['seg']['i'] = i_color
-    json_data = json.dumps(data)  
-    
-    #if(count % 2 == 0):
-    mqtt_client.publish("TrackingLights/leddriver/api", json_data)
-    #count = count + 1
 
     # Now assign the modified 'leds_copy' back to 'leds'
     #ledsData['leds'] = leds_copy
@@ -116,6 +148,12 @@ while(True):
     cv2.imshow('backgroundDiff', fgmask)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+
+
+    json_data = json.dumps(data)  
+    #if(count % 2 == 0):
+    mqtt_client.publish("TrackingLights/leddriver/api", json_data)
+    #count = count + 1
 
 # When everything is done, release the capture
 cap.release()
