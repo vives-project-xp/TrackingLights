@@ -13,7 +13,7 @@ import json
 ledsData = {'leds': [0]}
 
 # Define initial data dictionary for brightness and color values
-data = {'on': True , 'bri': 255, 'seg': {'i':[[255,255,255], [255,255,255], [255,255,255]]}}
+data = {'seg': 0, 'bri': 100, 'col': [255, 255, 255]}
 
 np.set_printoptions(suppress=True)
 
