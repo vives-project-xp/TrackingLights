@@ -5,12 +5,15 @@ import time
 import paho.mqtt.client as mqtt
 import json
 
-
 # Set up MQTT client
-mqtt_client = mqtt.Client()
-mqtt_client.connect("mqtt.devbit.be", 1883, 60)
+# mqtt_client = mqtt.Client()
+# mqtt_client.connect("mqtt.devbit.be", 1883, 60)
 
-data = {'leds': [0]}
+# Define initial LED data dictionary
+ledsData = {'leds': [0]}
+
+# Define initial data dictionary for brightness and color values
+data = {'on': True , 'bri': 255, 'seg': {'i':[[255,255,255], [255,255,255], [255,255,255]]}}
 
 np.set_printoptions(suppress=True)
 
@@ -18,14 +21,34 @@ cv2.startWindowThread()
 
 # open video stream
 # VideoCapture(0) == live camera view
-cap = cv2.VideoCapture('mov/hallway1.mov')
+cap = cv2.VideoCapture('mov/hallway2.mov')
+
 fgbg = cv2.createBackgroundSubtractorMOG2()
- 
 
 initialState = None  
 
+# Define MQTT topics for brightness and color
+brightness_topic = "TrackingLights/brightness"
+color_topic = "TrackingLights/color"
+count = 0
+
+# Define callback functions for MQTT
+def on_brightness_message(client, userdata, message):
+    data['bri'] = int(message.payload.decode())
+
+def on_color_message(client, userdata, message):
+    data['col'] = json.loads(message.payload.decode())
+
+# Subscribe to MQTT topics
+# mqtt_client.subscribe(brightness_topic)
+# mqtt_client.subscribe(color_topic)
+
+# # Set MQTT callbacks
+# mqtt_client.message_callback_add(brightness_topic, on_brightness_message)
+# mqtt_client.message_callback_add(color_topic, on_color_message)
+
 while(True): 
-    time.sleep(0.0)
+    time.sleep(0.04)
     # Capture frame-by-frame
     ret, frame = cap.read()
     # find best resolution
@@ -39,6 +62,7 @@ while(True):
     # Enhance brightness (increase all pixel values)
     # bright_frame = cv2.convertScaleAbs(frame, alpha=1, beta=20)
 
+
     # Blur out the edges
     gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)  
 
@@ -46,61 +70,117 @@ while(True):
 
    # we will assign grayFrame to initalState if is none  
 
-
     if initialState is None:  
-
         initialState = gray_frame  
         continue  
 
     # Calculation of difference between static or initial and gray frame we created  
 
-    # differ_frame = cv2.absdiff(initialState, gray_frame)  
 
     # the change between static or initial background and current gray frame are highlighted 
 
     thresh_frame = cv2.threshold(gray_frame, 150, 255, cv2.THRESH_BINARY)[1]  
 
+
     thresh_frame = cv2.dilate(thresh_frame, None, iterations = 2)  
     
-    lineHeight = 215
+    baseLineHeight = 215
+    headLineHeight = 181
     # Create a copy of the 'leds' list
     leds_copy = []
-
+    i_color = [255, 255, 255]
+    pixels = []
     # check for white pixels on line (moving objects)
     # and draw rectangle at this place
-    for i in range(0,width, 3):
-        if thresh_frame[lineHeight][i] == 255 or thresh_frame[181][i]==255:
-            if i % 6 == 0:
-                leds_copy.append(1)
-            cv2.rectangle(frame, (i-3,lineHeight-3), (i+3,lineHeight+3),(0,0,255) )
+    for i in range(0,width, 6):
+        if thresh_frame[baseLineHeight][i] == 255 or thresh_frame[headLineHeight][i] == 255:
+            leds_copy.append([224, 0, 32])
+            cv2.rectangle(frame, (i-3,baseLineHeight-3), (i+3,baseLineHeight+3),(0,0,255) )
+            ## pixels that detect motion add to list
+            ## then group pixels that are not further from eachother than x
+            ## and draw another rectangle at begining and ending of pixels_groups (array of arrays)
+            pixels.append(i)
+
         else:
-            if i % 6 == 0:
-                leds_copy.append(0)
+            leds_copy.append([255,255,255])
+
+
+    ## For better performance you can put it in first loop
+    # put pixels in groups
+    pixels_group = [[]]
+    group_index = 0
+    for i in range(1, len(pixels)-1, 2):
+        pixels_distance = pixels[i] - pixels[i-2]
+        print(pixels_distance)
+
+        # if pixels distance is not greater than 20 pixels group them up
+        if(pixels_distance < 40):
+            pixels_group[group_index].append(pixels[i-1])
+            pixels_group[group_index].append(pixels[i])
+
+        else:
+            
+            group_index += 1
+            pixels_group.append([])
+
+    #Draw bigger rectangles at first and last pixel of the group
+    # if(len(pixels_group) > 2):
+        
+    for group in pixels_group:
+        # print(group)
+        if(len(group) < 1):
+            break
+        # Use fixed height to draw visible rectangle
+        first_pixel = (group[0], 205)
+        last_pixel = (group[len(group)-1],225)
+        print(first_pixel, last_pixel)
+        # print("Creating group rectangle")
+        cv2.rectangle(frame, first_pixel, last_pixel, (0,255,0), 2)
+
+
+
+    # send mqtt message with data for ESP    
+    # i_color = leds_copy
+    # data['seg']['i'] = i_color
+    # json_data = json.dumps(data)  
+    
+    #if(count % 2 == 0):
+    # mqtt_client.publish("TrackingLights/leddriver/api", json_data)
+    #count = count + 1
 
     # Now assign the modified 'leds_copy' back to 'leds'
-    # Inside the loop, after motion detection and before publishing to MQTT
-
-    data['leds'] = leds_copy
-    json_data = json.dumps(data)  # Convert the dictionary to a JSON string
-    mqtt_client.publish("topic/TrackingLights/cameraDetectionArray", json_data)
-    print(json_data)
+    # ledsData['leds'] = leds_copy
+    # ledsArray = json.dumps(ledsData)  # Convert the dictionary to a JSON string
+    # #mqtt_client.publish("TrackingLights/cameraDetectionArray", ledsArray)
 
     leds_copy*=0
 
-    # draw guidline which pixels are checked
-    cv2.line(frame, (0,lineHeight), (width,lineHeight), (0,255,0),thickness=1)
-    cv2.line(frame, (0,181), (width,181), (0,255,0),thickness=1)
-    
+    # draw guideline which pixels are checked
+    cv2.line(frame, (0,baseLineHeight), (width,baseLineHeight), (0,255,0),thickness=1)
+    cv2.line(frame, (0,headLineHeight), (width,headLineHeight), (0,255,0),thickness=1)
+
+    # Draw guideline on the threshold frame as well
+    cv2.line(thresh_frame, (0,baseLineHeight), (width,baseLineHeight), (255,255,255),thickness=1)
+    cv2.line(thresh_frame, (0,headLineHeight), (width,headLineHeight), (255,255,255),thickness=1)
+
+    # show windows
     cv2.imshow('frame',frame)
     cv2.imshow('threshold', thresh_frame)
     cv2.imshow('backgroundDiff', fgmask)
+
+    # Move windows so they are properly placed
+    cv2.moveWindow('frame', 100,100)
+    cv2.moveWindow('threshold', 700,100)
+    cv2.moveWindow('backgroundDiff', 700,560)
+
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-# When everything done, release the capture
+# When everything is done, release the capture
 cap.release()
 # Disconnect from MQTT broker
-mqtt_client.disconnect()
-# finally, close the window
+# mqtt_client.disconnect()
+# Finally, close the window
 cv2.destroyAllWindows()
 cv2.waitKey(1)
+
