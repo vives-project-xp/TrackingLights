@@ -143,7 +143,7 @@ while(True):
         #print(pixels_distance)
 
         # if pixels distance is not greater than 20 pixels group them up
-        if(pixels_distance < 40):
+        if(pixels_distance < 50):
             pixels_group[group_index].append(pixels[i-1])
             pixels_group[group_index].append(pixels[i])
 
@@ -159,16 +159,31 @@ while(True):
         "on": True,
         "bri": 100,
         "seg":{"i":[0,100, 'FFFFFF']}}
+
     for group in pixels_group:
-        # print(group)
+
         if(len(group) < 1):
             break
         # Use fixed height to draw visible rectangle
         first_pixel = group[0]
         last_pixel = group[len(group)-1]
 
+        distance_betweeen_pixels = last_pixel - first_pixel
+
+        # Add minimum distance (for leds)
+        minimum_distance = 20
+        two_segments = 12
+        if(distance_betweeen_pixels < minimum_distance):
+            
+            # add three segments to lenght if its too short
+            first_pixel -= two_segments
+            last_pixel += two_segments
+
+            
+        
         # add group to JSON
         ## Need do to everyting seperate so there is no new array of elements
+        # Divide by 6 > each segment of leds = 6leds
         newJson["seg"]["i"].append(int(first_pixel/6))
         newJson["seg"]["i"].append(int(last_pixel/6))
         newJson["seg"]["i"].append("FF0000")
