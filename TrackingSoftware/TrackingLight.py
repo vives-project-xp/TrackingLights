@@ -76,8 +76,8 @@ def on_message(client, userdata, message):
 
 # Set up MQTT client
 mqtt_client = mqtt.Client()
-mqtt_client.on_connect = on_connect
-mqtt_client.on_message = on_message
+# mqtt_client.on_connect = on_connect
+# mqtt_client.on_message = on_message
 mqtt_client.connect(broker_address, port, 60)
 
 # Start MQTT loop (non-blocking)
@@ -105,8 +105,7 @@ while(True):
     frame = cv2.resize(frame, (width, height))
     # apply background subtraction
     fgmask = fgbg.apply(frame, None, 0) 
-    # Enhance brightness (increase all pixel values)
-    #bright_frame = cv2.convertScaleAbs(fgmask, alpha=1, beta=20)
+
     # Blur out the edges
     gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)  
 
@@ -115,10 +114,10 @@ while(True):
         initialState = gray_frame  
         continue  
 
-    thresh_frame = cv2.threshold(gray_frame, 150, 255, cv2.THRESH_BINARY)[1]  
+    thresh_frame = cv2.threshold(gray_frame, 100, 255, cv2.THRESH_BINARY)[1]  
     thresh_frame = cv2.dilate(thresh_frame, None, iterations = 2)  
         
-    #baseLineHeight = 645
+    # checking two heights for better detection
     baseLineHeight = 215
     headLineHeight = 181
 
@@ -143,12 +142,12 @@ while(True):
     # put pixels in groups
     pixels_group = [[]]
     group_index = 0
-    for i in range(1, len(pixels)-1, 2):
-        pixels_distance = pixels[i] - pixels[i-2]
+    for i in range(1, len(pixels)-1):
+        pixels_distance = pixels[i] - pixels[i-1]
         #print(pixels_distance)
 
         # if pixels distance is not greater than 20 pixels group them up
-        if(pixels_distance < 40):
+        if(pixels_distance < 50):
             pixels_group[group_index].append(pixels[i-1])
             pixels_group[group_index].append(pixels[i])
 
@@ -156,9 +155,6 @@ while(True):
             
             group_index += 1
             pixels_group.append([])
-
-    #Draw bigger rectangles at first and last pixel of the group
-    # if(len(pixels_group) > 2):
 
     newJson = { 
     "on": True,
@@ -169,17 +165,41 @@ while(True):
 
 
     for group in pixels_group:
-        # print(group)
+
         if(len(group) < 1):
             break
-        # Use fixed height to draw visible rectangle
+        
+        # Initialize values for image processing
         first_pixel = group[0]
         last_pixel = group[len(group)-1]
+        cv2.rectangle(frame, (first_pixel, 205), (last_pixel, 225), (0,255,0), 2)
 
-        # add group to JSON
-        ## Need do to everyting seperate so there is no new array of elements
-        newJson["seg"]["i"].append(int(first_pixel/6))
-        newJson["seg"]["i"].append(int(last_pixel/6))
+        # Divide by 6 > each segment of leds = 6leds
+        first_pixel = int(group[0]/6)
+        last_pixel = int(group[len(group)-1]/6)
+
+        distance_betweeen_pixels = last_pixel - first_pixel
+
+        # Add minimum distance (for leds)
+        minimum_distance = 20
+        two_segments = 12
+
+        # if(distance_betweeen_pixels < minimum_distance):
+            
+            # add three segments to lenght if its too short
+            # if(last_pixel > 100): last_pixel = 100
+            # if(first_pixel < 0 ): first_pixel = 0       
+
+        newJson["seg"]["i"].append(first_pixel-3)
+        newJson["seg"]["i"].append(last_pixel+3)
+        newJson["seg"]["i"].append("C00000")
+
+        newJson["seg"]["i"].append(first_pixel-1)
+        newJson["seg"]["i"].append(last_pixel+1)
+        newJson["seg"]["i"].append("F50000")
+        
+        newJson["seg"]["i"].append(first_pixel)
+        newJson["seg"]["i"].append(last_pixel)
         newJson["seg"]["i"].append("FF0000")
 
         # print("Creating group rectangle")
