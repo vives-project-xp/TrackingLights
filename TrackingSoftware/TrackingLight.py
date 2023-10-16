@@ -4,6 +4,9 @@ import time
 import paho.mqtt.client as mqtt
 import json
 
+white = [255, 255, 255]
+detected_color = [244, 0, 32] # vives_red as base
+
 # Set up MQTT client
 mqtt_client = mqtt.Client()
 mqtt_client.connect("mqtt.devbit.be", 1883, 60)
@@ -21,7 +24,7 @@ preset_topic = "TrackingLights/preset"
 # We have 100 segments 
 data = {
     'on': True,
-    'bri': 255,
+    'bri': 100,
     'seg': {'i':[[255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
@@ -33,6 +36,8 @@ data = {
                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],]}
 }
+
+group = {"seg":{"i":[0,0, detected_color, 100,100, detected_color]}}
 
 color = {'color' : [255, 255, 255]}
 preset = {'pr': 1}
@@ -72,7 +77,7 @@ mqtt_client.message_callback_add(preset_topic, on_preset_message)
 
 
 # Initialize video capture
-cap = cv2.VideoCapture('mov/hallway2.mov')
+cap = cv2.VideoCapture('mov/hallway1.mov')
 
 # Create a background subtractor
 fgbg = cv2.createBackgroundSubtractorMOG2()
@@ -80,12 +85,9 @@ fgbg = cv2.createBackgroundSubtractorMOG2()
 # Initialize initialState
 initialState = None
 
-white = [255, 255, 255]
-detected_color = [244, 0, 32] # vives_red as base
-
 while(True): 
 
-    time.sleep(0.05)
+    time.sleep(0.01)
     # Capture frame-by-frame
     ret, frame = cap.read()
 
@@ -97,9 +99,9 @@ while(True):
     # apply background subtraction
     fgmask = fgbg.apply(frame, None, 0) 
     # Enhance brightness (increase all pixel values)
-    bright_frame = cv2.convertScaleAbs(fgmask, alpha=1, beta=20)
+    #bright_frame = cv2.convertScaleAbs(fgmask, alpha=1, beta=20)
     # Blur out the edges
-    gray_frame = cv2.GaussianBlur(bright_frame, (21,21), 0)  
+    gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)  
 
    # we will assign grayFrame to initalState if is none  
     if initialState is None:  
@@ -116,6 +118,7 @@ while(True):
     # Create a copy of the 'leds' list
     leds_copy = []
     i_color = white
+    pixels = []
 
     # check for white pixels on line (moving objects)
     # and draw rectangle at this place
@@ -123,20 +126,58 @@ while(True):
         if thresh_frame[baseLineHeight][i] == 255 or thresh_frame[headLineHeight][i] == 255:
             leds_copy.append(detected_color)
             cv2.rectangle(frame, (i-3,baseLineHeight-3), (i+3,baseLineHeight+3), list(reversed(detected_color)) ,-1)
+            ## pixels that detect motion add to list
+            ## then group pixels that are not further from eachother than x
+            ## and draw another rectangle at begining and ending of pixels_groups (array of arrays)
+            pixels.append(i)
+
         else:
             leds_copy.append(white)
+
+    ## For better performance you can put it in first loop
+    # put pixels in groups
+    pixels_group = [[]]
+    group_index = 0
+    for i in range(1, len(pixels)-1, 2):
+        pixels_distance = pixels[i] - pixels[i-2]
+        #print(pixels_distance)
+
+        # if pixels distance is not greater than 20 pixels group them up
+        if(pixels_distance < 20):
+            pixels_group[group_index].append(pixels[i-1])
+            pixels_group[group_index].append(pixels[i])
+
+        else:
+            
+            group_index += 1
+            pixels_group.append([])
+
+    #Draw bigger rectangles at first and last pixel of the group
+    # if(len(pixels_group) > 2):
         
-    i_color = leds_copy
-    data['seg']['i'] = i_color
+    for group in pixels_group:
+        # print(group)
+        if(len(group) < 1):
+            break
+        # Use fixed height to draw visible rectangle
+        first_pixel = (group[0], 205)
+        last_pixel = (group[len(group)-1],225)
+        #group.append([int(group[0]/6), int(group[len(group)-1]/6), detected_color])
+        #data['i'] = group
+
+        # print("Creating group rectangle")
+        cv2.rectangle(frame, first_pixel, last_pixel, (0,255,0), 2)
 
     # Now assign the modified 'leds_copy' back to 'leds'
     #ledsData['leds'] = leds_copy
     #ledsArray = json.dumps(ledsData) 
     #mqtt_client.publish("TrackingLights/cameraDetectionArray", ledsArray)
 
-    json_data = json.dumps(data)  
+    i_color = leds_copy
+    data['seg']['i'] = i_color
+    json_data = json.dumps(data) 
     leds_copy*=0
-    
+
     #if(count % 2 == 0):
     mqtt_client.publish("TrackingLights/leddriver/api", json_data)
     #count = count + 1
@@ -152,6 +193,12 @@ while(True):
     cv2.imshow('frame', frame)
     cv2.imshow('threshold', thresh_frame)
     cv2.imshow('backgroundDiff', fgmask)
+
+    # Move windows so they are properly placed
+    cv2.moveWindow('frame', 100,100)
+    cv2.moveWindow('threshold', 700,100)
+    cv2.moveWindow('backgroundDiff', 700,560)
+
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
@@ -163,4 +210,5 @@ mqtt_client.disconnect()
 # Finally, close the window
 cv2.destroyAllWindows()
 cv2.waitKey(1)
+
 
