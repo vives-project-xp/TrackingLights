@@ -7,9 +7,10 @@ import json
 white = [255, 255, 255]
 detected_color = [244, 0, 32] # vives_red as base
 
-# Set up MQTT client
-mqtt_client = mqtt.Client()
-mqtt_client.connect("mqtt.devbit.be", 1883, 60)
+# Define MQTT broker details
+broker_address = "mqtt.devbit.be"
+port = 1883
+
 
 # Define MQTT topics for brightness and color
 brightness_topic = "TrackingLights/brightness"
@@ -37,43 +38,44 @@ data = {
                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],]}
 }
 
-group = {"seg":{"i":[0,0, detected_color, 100,100, detected_color]}}
+group = {
+    'on': True,
+    'bri': 100,
+    'seg':{'i':[0,0, detected_color, 100,100, detected_color]}}
 
-color = {'color' : [255, 255, 255]}
+color = {'color': [255, 255, 255]}
 preset = {'pr': 1}
 
-# Define callback functions for MQTT
-def on_brightness_message(client, userdata, message):
-    data['bri'] = int(message.payload.decode())
-    print(*message.topic,str(message.payload.decode()))
+# Callback when the client connects to the broker
+def on_connect(client, userdata, flags, rc):
+    print(f"Connected with result code {rc}")
+    # Subscribe to topics on successful connection
+    client.subscribe([(brightness_topic, 0), (color_topic, 0), (on_off_topic, 0), (preset_topic, 0)])
 
-def on_color_message(client, userdata, message):
-    color['color'] = json.loads(message.payload.decode())
-    print(*message.topic,str(message.payload.decode()))
+# Callback when a message is received from the broker
+def on_message(client, userdata, message):
+    print(f"Received message on topic {message.topic}: {message.payload.decode()}")
+    
+    # # Create JSON string based on the received message
+    # if message.topic == on_off_topic:
+    #     data['on'] = message.payload.decode()
+    # if message.topic == brightness_topic:     
+    #     data['on'] = message.payload.decode()
+    # if message.topic == color_topic():
+    #     color = message.payload.decode()
+    # if message.topic == preset_topic:
+    #     preset = message.payload.decode()
+    print(f"JSON representation: {data} {color} {preset}")
 
+# Set up MQTT client
+mqtt_client = mqtt.Client()
+mqtt_client.on_connect = on_connect
+mqtt_client.on_message = on_message
+mqtt_client.connect(broker_address, port, 60)
 
-def on_on_off_message(client, userdata, message):
-    data['on'] = json.loads(message.payload.decode())
-    print(*message.topic,str(message.payload.decode()))
+# Start MQTT loop (non-blocking)
+mqtt_client.loop_start()
 
-
-# Define callback functions for MQTT
-def on_preset_message(client, userdata, message):
-    preset['pr'] = int(message.payload.decode())
-    print(*message.topic,str(message.payload.decode()))
-
-
-# Subscribe to MQTT topics
-mqtt_client.subscribe(brightness_topic)
-mqtt_client.subscribe(color_topic)
-mqtt_client.subscribe(on_off_topic)
-mqtt_client.subscribe(preset_topic)
-
-# Set MQTT callbacks
-mqtt_client.message_callback_add(brightness_topic, on_brightness_message)
-mqtt_client.message_callback_add(color_topic, on_color_message)
-mqtt_client.message_callback_add(on_off_topic, on_on_off_message)
-mqtt_client.message_callback_add(preset_topic, on_preset_message)
 
 
 # Initialize video capture
@@ -86,8 +88,8 @@ fgbg = cv2.createBackgroundSubtractorMOG2()
 initialState = None
 
 while(True): 
-
-    time.sleep(0.01)
+    
+    time.sleep(0.03)
     # Capture frame-by-frame
     ret, frame = cap.read()
 
@@ -118,6 +120,7 @@ while(True):
     # Create a copy of the 'leds' list
     leds_copy = []
     i_color = white
+    i_group = []
     pixels = []
 
     # check for white pixels on line (moving objects)
@@ -162,8 +165,8 @@ while(True):
         # Use fixed height to draw visible rectangle
         first_pixel = (group[0], 205)
         last_pixel = (group[len(group)-1],225)
-        #group.append([int(group[0]/6), int(group[len(group)-1]/6), detected_color])
-        #data['i'] = group
+        #i_group.append([int(group[0]/6), int(group[len(group)-1]/6), detected_color])
+       # group['seg']['i'] = i_group
 
         # print("Creating group rectangle")
         cv2.rectangle(frame, first_pixel, last_pixel, (0,255,0), 2)
@@ -176,7 +179,10 @@ while(True):
     i_color = leds_copy
     data['seg']['i'] = i_color
     json_data = json.dumps(data) 
+    #mqtt_client.publish("TrackingLights/leddriver/api", json_data)
+    #json_data = json.dumps(group) 
     leds_copy*=0
+    #group*=0
 
     #if(count % 2 == 0):
     mqtt_client.publish("TrackingLights/leddriver/api", json_data)
