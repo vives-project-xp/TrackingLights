@@ -69,8 +69,8 @@ def on_message(client, userdata, message):
 
 # Set up MQTT client
 mqtt_client = mqtt.Client()
-mqtt_client.on_connect = on_connect
-mqtt_client.on_message = on_message
+# mqtt_client.on_connect = on_connect
+# mqtt_client.on_message = on_message
 mqtt_client.connect(broker_address, port, 60)
 
 # Start MQTT loop (non-blocking)
@@ -112,7 +112,7 @@ while(True):
     thresh_frame = cv2.threshold(gray_frame, 150, 255, cv2.THRESH_BINARY)[1]  
     thresh_frame = cv2.dilate(thresh_frame, None, iterations = 2)  
         
-    #baseLineHeight = 645
+    # checking two heights for better detection
     baseLineHeight = 215
     headLineHeight = 181
 
@@ -160,6 +160,11 @@ while(True):
 
         if(len(group) < 1):
             break
+        
+        # Initialize values for image processing
+        first_pixel = group[0]
+        last_pixel = group[len(group)-1]
+        cv2.rectangle(frame, (first_pixel, 205), (last_pixel, 225), (0,255,0), 2)
 
         # Divide by 6 > each segment of leds = 6leds
         first_pixel = int(group[0]/6)
@@ -171,24 +176,29 @@ while(True):
         minimum_distance = 20
         two_segments = 12
 
-        if(distance_betweeen_pixels < minimum_distance):
+        # if(distance_betweeen_pixels < minimum_distance):
             
             # add three segments to lenght if its too short
-            if(last_pixel > 100): last_pixel = 100
-            if(first_pixel < 0 ): first_pixel = 0
+            # if(last_pixel > 100): last_pixel = 100
+            # if(first_pixel < 0 ): first_pixel = 0       
+
+        newJson["seg"]["i"].append(first_pixel-3)
+        newJson["seg"]["i"].append(last_pixel+3)
+        newJson["seg"]["i"].append("C00000")
+
+        newJson["seg"]["i"].append(first_pixel-1)
+        newJson["seg"]["i"].append(last_pixel+1)
+        newJson["seg"]["i"].append("F50000")
         
         newJson["seg"]["i"].append(first_pixel)
         newJson["seg"]["i"].append(last_pixel)
         newJson["seg"]["i"].append("FF0000")
 
-        # print("Creating group rectangle")
-        cv2.rectangle(frame, (first_pixel, 205), (last_pixel, 225), (0,255,0), 2)
-
-
-    json_data = json.dumps(data) 
+       
+    # json_data = json.dumps(data) 
     newJson = json.dumps(newJson)
 
-    print(newJson)
+    # print(newJson)
     mqtt_client.publish("TrackingLights/leddriver/api", newJson)
 
 
