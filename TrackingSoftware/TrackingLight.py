@@ -23,28 +23,23 @@ preset_topic = "TrackingLights/preset"
 
 # Define initial data dictionary for brightness and color values 
 # We have 100 segments 
-data = {
-    'on': True,
-    'bri': 100,
-    'seg': {'i':[[255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
-                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
-                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
-                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
-                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
-                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
-                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
-                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
-                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
-                 [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],]}
-}
+# data = {
+#     'on': True,
+#     'bri': 100,
+#     'seg': {'i':[[255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+#                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+#                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+#                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+#                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+#                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+#                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+#                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+#                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
+#                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],]}
+# }
 
-group = {
-    'on': True,
-    'bri': 100,
-    "seg":{"i":[0,0, detected_color, 100,100, detected_color]}}
+input = {'on': True, 'color': [255, 255, 255], 'pr': 1, 'bri': 125}
 
-color = {'color': [255, 255, 255]}
-preset = {'pr': 1}
 
 # Callback when the client connects to the broker
 def on_connect(client, userdata, flags, rc):
@@ -54,18 +49,30 @@ def on_connect(client, userdata, flags, rc):
 
 # Callback when a message is received from the broker
 def on_message(client, userdata, message):
+    global data
+
     print(f"Received message on topic {message.topic}: {message.payload.decode()}")
-    
-    # # Create JSON string based on the received message
-    # if message.topic == on_off_topic:
-    #     data['on'] = message.payload.decode()
-    # if message.topic == brightness_topic:     
-    #     data['on'] = message.payload.decode()
-    # if message.topic == color_topic():
-    #     color = message.payload.decode()
-    # if message.topic == preset_topic:
-    #     preset = message.payload.decode()
-    print(f"JSON representation: {data} {color} {preset}")
+
+    try:
+        received_data = json.loads(message.payload.decode())
+
+        # Update data based on the received data
+        if 'bri' in received_data:
+            input['bri'] = received_data["bri"]
+            print(received_data["bri"])
+        if 'color' in received_data:
+            input['color'] = received_data["color"]
+            print(received_data["color"])
+        if 'on' in received_data:
+            input['on'] = received_data["on"]
+            print(received_data["on"])
+        if 'pr' in received_data:
+            input['pr'] = received_data["pr"]
+            print(received_data["pr"])
+
+        print(f"Updated data: {input}")
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON: {e}")
 
 # Set up MQTT client
 mqtt_client = mqtt.Client()
@@ -88,11 +95,10 @@ fgbg = cv2.createBackgroundSubtractorMOG2()
 initialState = None
 
 while(True): 
-    
+
+    ret, frame = cap.read()
     time.sleep(0.03)
     # Capture frame-by-frame
-    ret, frame = cap.read()
-
     # find best resolution
     width = 600 # *3
     height = 360 # *3
@@ -105,7 +111,7 @@ while(True):
     # Blur out the edges
     gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)  
 
-   # we will assign grayFrame to initalState if is none  
+    # we will assign grayFrame to initalState if is none  
     if initialState is None:  
         initialState = gray_frame  
         continue  
@@ -159,6 +165,7 @@ while(True):
         "on": True,
         "bri": 100,
         "seg":{"i":[0,100, 'FFFFFF']}}
+    
     for group in pixels_group:
         # print(group)
         if(len(group) < 1):
@@ -177,11 +184,17 @@ while(True):
         cv2.rectangle(frame, (first_pixel, 205), (last_pixel, 225), (0,255,0), 2)
 
 
-    json_data = json.dumps(data) 
     newJson = json.dumps(newJson)
-
-    print(newJson)
-    mqtt_client.publish("TrackingLights/leddriver/api", newJson)
+    if input['pr'] == 0:
+    #print(newJson)
+        mqtt_client.publish("TrackingLights/leddriver/api", newJson)
+    elif input['pr'] == 1:
+        newJson = { 
+        "on": True,
+        "bri": 100,
+        "seg":{"i":[0,100, 'ff00ff']}}
+        newJson = json.dumps(newJson)
+        mqtt_client.publish("TrackingLights/leddriver/api", newJson)
 
 
 
@@ -205,7 +218,6 @@ while(True):
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-
 # When everything is done, release the capture
 cap.release()
 # Disconnect from MQTT broker
@@ -213,5 +225,6 @@ mqtt_client.disconnect()
 # Finally, close the window
 cv2.destroyAllWindows()
 cv2.waitKey(1)
+
 
 
