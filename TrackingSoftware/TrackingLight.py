@@ -100,8 +100,7 @@ while(True):
     frame = cv2.resize(frame, (width, height))
     # apply background subtraction
     fgmask = fgbg.apply(frame, None, 0) 
-    # Enhance brightness (increase all pixel values)
-    #bright_frame = cv2.convertScaleAbs(fgmask, alpha=1, beta=20)
+
     # Blur out the edges
     gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)  
 
@@ -152,9 +151,6 @@ while(True):
             group_index += 1
             pixels_group.append([])
 
-    #Draw bigger rectangles at first and last pixel of the group
-    # if(len(pixels_group) > 2):
-
     newJson = { 
         "on": True,
         "bri": 100,
@@ -164,28 +160,25 @@ while(True):
 
         if(len(group) < 1):
             break
-        # Use fixed height to draw visible rectangle
-        first_pixel = group[0]
-        last_pixel = group[len(group)-1]
+
+        # Divide by 6 > each segment of leds = 6leds
+        first_pixel = int(group[0]/6)
+        last_pixel = int(group[len(group)-1]/6)
 
         distance_betweeen_pixels = last_pixel - first_pixel
 
         # Add minimum distance (for leds)
         minimum_distance = 20
         two_segments = 12
+
         if(distance_betweeen_pixels < minimum_distance):
             
             # add three segments to lenght if its too short
-            first_pixel -= two_segments
-            last_pixel += two_segments
-
-            
+            if(last_pixel > 100): last_pixel = 100
+            if(first_pixel < 0 ): first_pixel = 0
         
-        # add group to JSON
-        ## Need do to everyting seperate so there is no new array of elements
-        # Divide by 6 > each segment of leds = 6leds
-        newJson["seg"]["i"].append(int(first_pixel/6))
-        newJson["seg"]["i"].append(int(last_pixel/6))
+        newJson["seg"]["i"].append(first_pixel)
+        newJson["seg"]["i"].append(last_pixel)
         newJson["seg"]["i"].append("FF0000")
 
         # print("Creating group rectangle")
