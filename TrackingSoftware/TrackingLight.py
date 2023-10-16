@@ -109,7 +109,7 @@ while(True):
         initialState = gray_frame  
         continue  
 
-    thresh_frame = cv2.threshold(gray_frame, 150, 255, cv2.THRESH_BINARY)[1]  
+    thresh_frame = cv2.threshold(gray_frame, 100, 255, cv2.THRESH_BINARY)[1]  
     thresh_frame = cv2.dilate(thresh_frame, None, iterations = 2)  
         
     # checking two heights for better detection
@@ -137,8 +137,8 @@ while(True):
     # put pixels in groups
     pixels_group = [[]]
     group_index = 0
-    for i in range(1, len(pixels)-1, 2):
-        pixels_distance = pixels[i] - pixels[i-2]
+    for i in range(1, len(pixels)-1):
+        pixels_distance = pixels[i] - pixels[i-1]
         #print(pixels_distance)
 
         # if pixels distance is not greater than 20 pixels group them up
