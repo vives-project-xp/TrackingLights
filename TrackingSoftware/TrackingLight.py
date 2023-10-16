@@ -41,7 +41,7 @@ data = {
 group = {
     'on': True,
     'bri': 100,
-    'seg':{'i':[0,0, detected_color, 100,100, detected_color]}}
+    "seg":{"i":[0,0, detected_color, 100,100, detected_color]}}
 
 color = {'color': [255, 255, 255]}
 preset = {'pr': 1}
@@ -118,7 +118,6 @@ while(True):
     headLineHeight = 181
 
     # Create a copy of the 'leds' list
-    leds_copy = []
     i_color = white
     i_group = []
     pixels = []
@@ -127,15 +126,13 @@ while(True):
     # and draw rectangle at this place
     for i in range(0,width, 6):
         if thresh_frame[baseLineHeight][i] == 255 or thresh_frame[headLineHeight][i] == 255:
-            leds_copy.append(detected_color)
             cv2.rectangle(frame, (i-3,baseLineHeight-3), (i+3,baseLineHeight+3), list(reversed(detected_color)) ,-1)
+
             ## pixels that detect motion add to list
             ## then group pixels that are not further from eachother than x
             ## and draw another rectangle at begining and ending of pixels_groups (array of arrays)
             pixels.append(i)
-
-        else:
-            leds_copy.append(white)
+            
 
     ## For better performance you can put it in first loop
     # put pixels in groups
@@ -146,7 +143,7 @@ while(True):
         #print(pixels_distance)
 
         # if pixels distance is not greater than 20 pixels group them up
-        if(pixels_distance < 20):
+        if(pixels_distance < 40):
             pixels_group[group_index].append(pixels[i-1])
             pixels_group[group_index].append(pixels[i])
 
@@ -157,36 +154,36 @@ while(True):
 
     #Draw bigger rectangles at first and last pixel of the group
     # if(len(pixels_group) > 2):
-        
+
+    newJson = { 
+        "on": True,
+        "bri": 100,
+        "seg":{"i":[0,100, 'FFFFFF']}}
     for group in pixels_group:
         # print(group)
         if(len(group) < 1):
             break
         # Use fixed height to draw visible rectangle
-        first_pixel = (group[0], 205)
-        last_pixel = (group[len(group)-1],225)
-        #i_group.append([int(group[0]/6), int(group[len(group)-1]/6), detected_color])
-       # group['seg']['i'] = i_group
+        first_pixel = group[0]
+        last_pixel = group[len(group)-1]
+
+        # add group to JSON
+        ## Need do to everyting seperate so there is no new array of elements
+        newJson["seg"]["i"].append(int(first_pixel/6))
+        newJson["seg"]["i"].append(int(last_pixel/6))
+        newJson["seg"]["i"].append("FF0000")
 
         # print("Creating group rectangle")
-        cv2.rectangle(frame, first_pixel, last_pixel, (0,255,0), 2)
+        cv2.rectangle(frame, (first_pixel, 205), (last_pixel, 225), (0,255,0), 2)
 
-    # Now assign the modified 'leds_copy' back to 'leds'
-    #ledsData['leds'] = leds_copy
-    #ledsArray = json.dumps(ledsData) 
-    #mqtt_client.publish("TrackingLights/cameraDetectionArray", ledsArray)
 
-    i_color = leds_copy
-    data['seg']['i'] = i_color
     json_data = json.dumps(data) 
-    #mqtt_client.publish("TrackingLights/leddriver/api", json_data)
-    #json_data = json.dumps(group) 
-    leds_copy*=0
-    #group*=0
+    newJson = json.dumps(newJson)
 
-    #if(count % 2 == 0):
-    mqtt_client.publish("TrackingLights/leddriver/api", json_data)
-    #count = count + 1
+    print(newJson)
+    mqtt_client.publish("TrackingLights/leddriver/api", newJson)
+
+
 
     # draw guideline which pixels are checked
     cv2.line(frame, (0,baseLineHeight), (width,baseLineHeight), (0,255,0),thickness=1)
