@@ -49,7 +49,7 @@ def on_connect(client, userdata, flags, rc):
 
 # Callback when a message is received from the broker
 def on_message(client, userdata, message):
-    global data
+    global newJson
 
     print(f"Received message on topic {message.topic}: {message.payload.decode()}")
 
@@ -95,7 +95,6 @@ fgbg = cv2.createBackgroundSubtractorMOG2()
 initialState = None
 
 while(True): 
-
     ret, frame = cap.read()
     time.sleep(0.03)
     # Capture frame-by-frame
@@ -162,10 +161,13 @@ while(True):
     # if(len(pixels_group) > 2):
 
     newJson = { 
-        "on": True,
-        "bri": 100,
-        "seg":{"i":[0,100, 'FFFFFF']}}
-    
+    "on": True,
+    "bri": 100,
+    "seg":{"i":[0,100, 'FFFFFF']}}
+    newJson['bri'] = input['bri']
+    newJson['on'] = input['on']
+
+
     for group in pixels_group:
         # print(group)
         if(len(group) < 1):
@@ -184,15 +186,12 @@ while(True):
         cv2.rectangle(frame, (first_pixel, 205), (last_pixel, 225), (0,255,0), 2)
 
 
-    newJson = json.dumps(newJson)
     if input['pr'] == 0:
-    #print(newJson)
+        print(newJson)
+        newJson = json.dumps(newJson)
         mqtt_client.publish("TrackingLights/leddriver/api", newJson)
-    elif input['pr'] == 1:
-        newJson = { 
-        "on": True,
-        "bri": 100,
-        "seg":{"i":[0,100, 'ff00ff']}}
+    elif input['pr'] == 1:    
+        newJson = {"seg":{"i":[0,100, input['color']]}}
         newJson = json.dumps(newJson)
         mqtt_client.publish("TrackingLights/leddriver/api", newJson)
 
