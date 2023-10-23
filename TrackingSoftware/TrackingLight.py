@@ -37,8 +37,13 @@ preset_topic = "TrackingLights/preset"
 #                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
 #                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],]}
 # }
+newJson = { 
+    "on": True,
+    "bri": 100,
+    "seg":{"i":[0,100, 'FFFFFF']}}
 
 input = {'on': True, 'color': [255, 255, 255], 'pr': 1, 'bri': 125}
+
 
 
 # Callback when the client connects to the broker
@@ -156,10 +161,7 @@ while(True):
             group_index += 1
             pixels_group.append([])
 
-    newJson = { 
-    "on": True,
-    "bri": 100,
-    "seg":{"i":[0,100, 'FFFFFF']}}
+
     newJson['bri'] = input['bri']
     newJson['on'] = input['on']
 
@@ -210,10 +212,12 @@ while(True):
         print(newJson)
         newJson = json.dumps(newJson)
         mqtt_client.publish("TrackingLights/leddriver/api", newJson)
+
     elif input['pr'] == 1:    
         newJson = {"seg":{"i":[0,100, input['color']]}}
         newJson = json.dumps(newJson)
         mqtt_client.publish("TrackingLights/leddriver/api", newJson)
+
 
 
 
