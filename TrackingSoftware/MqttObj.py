@@ -64,7 +64,7 @@ class MqttController:
 					self.input['on'] = received_data["on"]
 					print(received_data["on"])
 			if 'pr' in received_data:
-					self.input = received_data["pr"]
+					self.input['pr'] = received_data["pr"]
 					print(received_data["pr"])
 
 		except json.JSONDecodeError as e:
