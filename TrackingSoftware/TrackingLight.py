@@ -204,8 +204,6 @@ while(True):
         newJson["seg"]["i"].append(last_pixel)
         newJson["seg"]["i"].append("FF0000")
 
-        # print("Creating group rectangle")
-        cv2.rectangle(frame, (first_pixel, 205), (last_pixel, 225), (0,255,0), 2)
 
 
     if input['pr'] == 0:
