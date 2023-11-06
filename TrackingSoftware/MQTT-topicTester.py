@@ -36,7 +36,7 @@ def change_color():
 def change_detected_color():
     color = input("Enter the color value (in hex, e.g., FFFFFF for white): ")
     message = json.dumps({"dc": color})
-    send_mqtt_message(color_topic, message)
+    send_mqtt_message(detected_color_topic, message)
 
 # Function to turn on/off
 def toggle_on_off():

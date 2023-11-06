@@ -21,8 +21,8 @@ preset_topic = "TrackingLights/preset"
 # Define initial LED data dictionary
 #ledsData = {'leds': [0]}
 
-# Define initial data dictionary for brightness and color values 
-# We have 100 segments 
+# Define initial data dictionary for brightness and color values
+# We have 100 segments
 # data = {
 #     'on': True,
 #     'bri': 100,
@@ -37,7 +37,7 @@ preset_topic = "TrackingLights/preset"
 #                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],
 #                  [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255], [255,255,255],]}
 # }
-newJson = { 
+newJson = {
     "on": True,
     "bri": 100,
     "seg":{"i":[0,100, 'FFFFFF']}}
@@ -99,7 +99,7 @@ fgbg = cv2.createBackgroundSubtractorMOG2()
 # Initialize initialState
 initialState = None
 
-while(True): 
+while(True):
     ret, frame = cap.read()
     time.sleep(0.03)
     # Capture frame-by-frame
@@ -109,19 +109,20 @@ while(True):
     # resizing for faster detection
     frame = cv2.resize(frame, (width, height))
     # apply background subtraction
-    fgmask = fgbg.apply(frame, None, 0) 
+    fgmask = fgbg.apply(frame, None, 0)
 
     # Blur out the edges
-    gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)  
+    gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)
 
-    # we will assign grayFrame to initalState if is none  
-    if initialState is None:  
-        initialState = gray_frame  
-        continue  
+    # we will assign grayFrame to initalState if is none
+    if initialState is None:
+        initialState = gray_frame
+        continue
 
-    thresh_frame = cv2.threshold(gray_frame, 100, 255, cv2.THRESH_BINARY)[1]  
-    thresh_frame = cv2.dilate(thresh_frame, None, iterations = 2)  
-        
+    thresh_frame = cv2.threshold(gray_frame, 100, 255, cv2.THRESH_BINARY)[1]
+    thresh_frame = cv2.dilate(thresh_frame, None, iterations = 2)
+
+
     # checking two heights for better detection
     baseLineHeight = 215
     headLineHeight = 181
@@ -141,7 +142,10 @@ while(True):
             ## then group pixels that are not further from eachother than x
             ## and draw another rectangle at begining and ending of pixels_groups (array of arrays)
             pixels.append(i)
-            
+    newJson = {
+    "on": True,
+    "bri": 100,
+    "seg":{"i":[0,100, 'FFFFFF']}}
 
     ## For better performance you can put it in first loop
     # put pixels in groups
@@ -157,7 +161,6 @@ while(True):
             pixels_group[group_index].append(pixels[i])
 
         else:
-            
             group_index += 1
             pixels_group.append([])
 
@@ -170,7 +173,7 @@ while(True):
 
         if(len(group) < 1):
             break
-        
+
         # Initialize values for image processing
         first_pixel = group[0]
         last_pixel = group[len(group)-1]
@@ -187,10 +190,10 @@ while(True):
         two_segments = 12
 
         # if(distance_betweeen_pixels < minimum_distance):
-            
+
             # add three segments to lenght if its too short
             # if(last_pixel > 100): last_pixel = 100
-            # if(first_pixel < 0 ): first_pixel = 0       
+            # if(first_pixel < 0 ): first_pixel = 0
 
         newJson["seg"]["i"].append(first_pixel-3)
         newJson["seg"]["i"].append(last_pixel+3)
@@ -199,7 +202,7 @@ while(True):
         newJson["seg"]["i"].append(first_pixel-1)
         newJson["seg"]["i"].append(last_pixel+1)
         newJson["seg"]["i"].append("F50000")
-        
+
         newJson["seg"]["i"].append(first_pixel)
         newJson["seg"]["i"].append(last_pixel)
         newJson["seg"]["i"].append("FF0000")
@@ -211,7 +214,7 @@ while(True):
         newJson = json.dumps(newJson)
         mqtt_client.publish("TrackingLights/leddriver/api", newJson)
 
-    elif input['pr'] == 1:    
+    elif input['pr'] == 1:
         newJson = {"seg":{"i":[0,100, input['color']]}}
         newJson = json.dumps(newJson)
         mqtt_client.publish("TrackingLights/leddriver/api", newJson)
