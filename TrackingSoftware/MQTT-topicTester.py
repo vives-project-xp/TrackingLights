@@ -56,10 +56,10 @@ while True:
     print("1. Brightness")
     print("2. Color")
     print("3. Detected color")
-    print("3. On/Off")
-    print("4. Preset")
-    print("5. Quit")
-    choice = input("Enter your choice (1-5): ")
+    print("4. On/Off")
+    print("5. Preset")
+    print("6. Quit")
+    choice = input("Enter your choice (1-6): ")
 
     if choice == '1' or choice == 'b' or choice == 'B' or choice == "bri":
         change_brightness()
