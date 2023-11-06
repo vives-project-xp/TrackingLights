@@ -9,6 +9,7 @@ class MqttController:
 		self.color_topic = "TrackingLights/color"
 		self.on_off_topic = "TrackingLights/on_off"
 		self.preset_topic = "TrackingLights/preset"
+		self.detected_topic = "TrackingLights/detected_color"
 
 		#Define mqtt broker
 		broker_address = "mqtt.devbit.be"
@@ -25,14 +26,16 @@ class MqttController:
 
 		# Subscribe to topics on successful connection
 		self.mqtt_client.subscribe([(self.brightness_topic, 0), (self.color_topic, 0),
-																(self.on_off_topic, 0), (self.preset_topic, 0)])
+																(self.on_off_topic, 0), (self.preset_topic, 0), (self.detected_topic,0)])
 
 		self.mqtt_client.loop_start()
 
 		#default values to use when need to reset
-		self.resetValues = {'on': True, 'color': [255, 255, 255], 'pr': 0, 'bri': 125}
+		self.resetValues = {'on': True, 'color': [255, 255, 255], 'bri': 125}
 
-		self.input = {'on': True, 'color': [255, 255, 255], 'pr': 0, 'bri': 125}
+		self.input = {'on': True, 'color': [255, 255, 255], 'bri': 125, 'dc':"FF0000"}
+
+		self.preset = 0
 
 		return
 
@@ -43,6 +46,8 @@ class MqttController:
 	#Send tracking data to mqtt
 	def mqttTracking(self, trackingJson):
 		trackingJson = json.dumps(trackingJson)
+		print(trackingJson)
+
 		self.mqtt_client.publish("TrackingLights/leddriver/api", trackingJson)
 		return
 
@@ -64,8 +69,12 @@ class MqttController:
 					self.input['on'] = received_data["on"]
 					print(received_data["on"])
 			if 'pr' in received_data:
-					self.input['pr'] = received_data["pr"]
+					self.preset = 0
 					print(received_data["pr"])
+			if 'dc' in received_data:
+				self.input['dc'] = received_data["dc"]
+				print(received_data["dc"])
+			print(received_data)
 
 		except json.JSONDecodeError as e:
 			print(f"Error decoding JSON: {e}")
@@ -75,7 +84,7 @@ class MqttController:
 		return	
 
 	def getPreset(self): 
-		return self.input['pr']
+		return self.preset
 
 
 	def preset3(self):
@@ -84,13 +93,15 @@ class MqttController:
 
 
 	def preset1(self):
-		print("Patern1")
+		
 		return
 
 	def preset2(self):
 		print("Patern2")
 		return
 
+	def getInput(self):
+		return self.input
 
 def on_connect(client, userdata, flags, rc):
 		print(f"Connected with result code {rc}")
