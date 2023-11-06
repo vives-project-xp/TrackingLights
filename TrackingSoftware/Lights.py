@@ -4,19 +4,27 @@ class Lights:
   def __init__(self):
 
     #Define colors
-    self.white = [255, 255, 255]
-    self.detectedColors = ["FF0000", "F50000", "C00000"]
+    self.notDetected = 'FFFFFF'
+    self.detectedColors = "FF0000"
 
     self.lightsJson = {}
 
     return
   
-  def groupingPixels(self, pixels):
+  def groupingPixels(self, pixels, input):
     
+    if input['dc']:
+      self.detectedColors = input['dc']
+
+    self.notDetected = input['color']
+
     self.lightsJson = { 
-        "on": True,
-        "bri": 100,
-        "seg":{"i":[0,100, 'FFFFFF']}}
+      "on": input['on'],
+      "bri": input['bri'],
+      "seg":{"i":[0,100, self.notDetected]}}
+  
+    
+
 
     # put pixels in groups
     pixels_group = [[]]
@@ -51,15 +59,15 @@ class Lights:
       #Adjust pixels color with fade effect
       self.lightsJson["seg"]["i"].append(first_pixel-3)
       self.lightsJson["seg"]["i"].append(last_pixel+3)
-      self.lightsJson["seg"]["i"].append("C00000")
+      self.lightsJson["seg"]["i"].append(self.detectedColors)
 
-      self.lightsJson["seg"]["i"].append(first_pixel-1)
-      self.lightsJson["seg"]["i"].append(last_pixel+1)
-      self.lightsJson["seg"]["i"].append("F50000")
+      # self.lightsJson["seg"]["i"].append(first_pixel-1)
+      # self.lightsJson["seg"]["i"].append(last_pixel+1)
+      # self.lightsJson["seg"]["i"].append("F50000")
 
-      self.lightsJson["seg"]["i"].append(first_pixel)
-      self.lightsJson["seg"]["i"].append(last_pixel)
-      self.lightsJson["seg"]["i"].append("FF0000")
+      # self.lightsJson["seg"]["i"].append(first_pixel)
+      # self.lightsJson["seg"]["i"].append(last_pixel)
+      # self.lightsJson["seg"]["i"].append("FF0000")
 
     return pixels_group
 
