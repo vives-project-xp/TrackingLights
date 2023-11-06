@@ -25,7 +25,8 @@ switcher = {
     0:mqtt_controller.mqttTracking, 
     1:mqtt_controller.preset1,
     2:mqtt_controller.preset2,
-    3:mqtt_controller.preset3
+    3:mqtt_controller.preset3,
+    420:mqtt_controller.preset420
 }
 
 while(True): 
@@ -46,7 +47,7 @@ while(True):
 
         # Capture frame-by-frame
         ret, frame = cap.read()
-        time.sleep(0.03)
+        time.sleep(0.1)
         # find best resolution
         width = 600 # *3
         height = 360 # *3
@@ -76,7 +77,7 @@ while(True):
                 pixels.append(i)
 
         #Send detected pixels list to grouping function
-        pixels_group = lights.groupingPixels(pixels, mqtt_controller.getInput())
+        pixels_group = lights.groupingPixels(pixels, mqtt_controller.getDetectionInput())
 
 
 
