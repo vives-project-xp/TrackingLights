@@ -1,6 +1,6 @@
 import paho.mqtt.client as mqtt
 import json
-
+import time
 class MqttController:
 
 	def __init__(self):
@@ -30,12 +30,19 @@ class MqttController:
 
 		self.mqtt_client.loop_start()
 
-		#default values to use when need to reset
-		self.resetValues = {'on': True, 'color': [255, 255, 255], 'bri': 125}
-
-		self.input = {'on': True, 'color': [255, 255, 255], 'bri': 125, 'dc':"FF0000"}
 
 		self.preset = 0
+		self.color = "FFFFFF"
+
+
+		#default values to use when need to reset
+		self.resetValues = {"on": True, "color": [255,255,255], "bri": 125, "seg":{"i": [0,100,"FFFFFF"]}}
+
+		self.detectionInput = {"on": True, "color": [255,255,255], "bri": 125, "seg":{"i": [0,100,"FFFFFF"]}}
+
+		self.input = {"on": True, "bri": 125, "seg":{"i": [0,100, "FF0000"]}}
+
+		
 
 		return
 
@@ -58,29 +65,49 @@ class MqttController:
 		try:
 			received_data = json.loads(message.payload.decode())
 
+
+			# check for correct topic used
 			# Update data based on the received data
+
+			# color change outside detection
+			if message.topic == self.color_topic:
+				if 'color' in received_data:
+						self.color = received_data['color']
+						print(received_data["color"])
+
+			if message.topic == self.detected_topic:
+				# Background color
+				if 'color' in received_data:
+					self.detectionInput['color'] = received_data["color"]
+					
+				# Detection color
+				if 'dc' in received_data:
+					self.detectionInput['dc'] = received_data["dc"]
+					print(received_data["dc"])
+
+			#globals
 			if 'bri' in received_data:
 					self.input['bri'] = received_data["bri"]
 					print(received_data["bri"])
-			if 'color' in received_data:
-					self.input['color'] = received_data["color"]
-					print(received_data["color"])
+
 			if 'on' in received_data:
 					self.input['on'] = received_data["on"]
 					print(received_data["on"])
 			if 'pr' in received_data:
-					self.preset = 0
+					self.preset = received_data['pr']
 					print(received_data["pr"])
-			if 'dc' in received_data:
-				self.input['dc'] = received_data["dc"]
-				print(received_data["dc"])
-			print(received_data)
+
 
 		except json.JSONDecodeError as e:
 			print(f"Error decoding JSON: {e}")
 
 	def mqttUpdate(self):
+		self.input['seg']['i'] = [0,100, self.color]
 
+		jsonConvert = json.dumps(self.input)
+		print(jsonConvert)
+		self.mqtt_client.publish("TrackingLights/leddriver/api", jsonConvert)
+		time.sleep(1)
 		return	
 
 	def getPreset(self): 
@@ -93,15 +120,46 @@ class MqttController:
 
 
 	def preset1(self):
+
+		var = self.resetValues
 		
+		var['seg']['i'] = [0, 100, "FF0000"]
+		for x in range(0,100,2):
+			var['seg']['i'].append([x,x,"00FF00"])
+			
+		first = json.dumps(var) 
+		
+		var['seg']['i'] = [0,100, "00FF00"]
+		for x in range(1,100, 2):
+			var['seg']['i'].append([x,x, "FF0000"])
+		
+		second = json.dumps(var)
+
+		while(True):
+			
+			self.mqtt_client.publish("TrackingLights/leddriver/api", first)
+			time.sleep(1)
+			self.mqtt_client.publish("TrackingLights/leddriver/api", second)
+			time.sleep(1)
+
+
 		return
+
+
 
 	def preset2(self):
 		print("Patern2")
 		return
 
+	def preset420(self):
+		self.mqttUpdate()
+		return
+
 	def getInput(self):
 		return self.input
+
+	def getDetectionInput(self):
+		return self.detectionInput
 
 def on_connect(client, userdata, flags, rc):
 		print(f"Connected with result code {rc}")
