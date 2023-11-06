@@ -70,8 +70,6 @@ while(True):
                 
 
         # Create a copy of the 'leds' list
-        i_color = white
-        i_group = []
         pixels = []
 
         for i in range(0,width, 6):
