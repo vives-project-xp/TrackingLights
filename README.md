@@ -15,7 +15,7 @@ Led strips: we use the tm1814 leds. These operate at 24V
 
 Esp32: This is used to control the led's. The ESP receives data from the raspberry pi
 
-Power supply led's + Esp32: Here we used a 24V+15A power supply, since the esp32 draws power (5v) from the leds we don't need to make any adaptations to power it. The led's have an average usage of 5A. So by using a power supply which could supply 15A, we have room for error.
+Power supply led's + Esp32: Here we used a 24V+8A power supply. The led's have an average usage of 5A. So by using a power supply which could supply 8A, we have room for error.
 
 24V-5V converter: Since the ESP32 runs on 5V, a converter is placed between the power supply of the leds and the ESP32.
 
