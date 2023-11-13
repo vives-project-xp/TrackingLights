@@ -25,8 +25,7 @@ class MqttController:
 		self.mqtt_client.connect(broker_address, port, 60)
 
 		# Subscribe to topics on successful connection
-		self.mqtt_client.subscribe([(self.brightness_topic, 0), (self.color_topic, 0),
-																(self.on_off_topic, 0), (self.preset_topic, 0), (self.detected_topic,0)])
+		self.mqtt_client.subscribe([(self.brightness_topic, 0), (self.color_topic, 0), (self.on_off_topic, 0), (self.preset_topic, 0), (self.detected_topic,0)])
 
 		self.mqtt_client.loop_start()
 
