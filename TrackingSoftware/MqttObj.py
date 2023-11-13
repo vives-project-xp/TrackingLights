@@ -1,6 +1,8 @@
 import paho.mqtt.client as mqtt
 import json
 
+from credentials import USERNAME, PASSWORD
+
 
 class MqttController:
     def __init__(self):
@@ -16,8 +18,8 @@ class MqttController:
         port = 1883
 
         # Define username and password
-        username = "Aurorapi"
-        password = "Aurora"
+        username = USERNAME
+        password = PASSWORD
 
         # Initialize mqtt connection
         self.mqtt_client = mqtt.Client()
