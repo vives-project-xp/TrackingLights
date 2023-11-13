@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  my_service:
+    build: ./my_service
+    container_name: my_service_container
+    privileged: true
+    restart: always
+    devices:
+      - /dev/vchiq:/dev/vchiq
+      - /dev/vcsm:/dev/vcsm
+    environment:
+      - DISPLAY=:0
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    ports:
+      - "1883:1883"  # MQTT port
+
+  my_service_build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: my_service_image
+    container_name: my_service_build
+    command: ["tail", "-f", "/dev/null"]
