@@ -12,7 +12,7 @@ lights = Lights()
 mqtt_controller = MqttController()
 
 # Initialize video capture
-cap = cv2.VideoCapture('mov/hallway1.mov')
+cap = cv2.VideoCapture(0)
 
 # Create a background subtractor
 fgbg = cv2.createBackgroundSubtractorMOG2()
@@ -46,6 +46,10 @@ while(True):
 
         # Capture frame-by-frame
         ret, frame = cap.read()
+        if ret:
+            print("Jipla de pipla")
+        else:
+            print("nigga no")
         time.sleep(0.03)
         # find best resolution
         width = 600 # *3
@@ -108,14 +112,14 @@ while(True):
         cv2.line(thresh_frame, (0,baseLineHeight), (width,baseLineHeight), (255,255,255),thickness=1)
         cv2.line(thresh_frame, (0,headLineHeight), (width,headLineHeight), (255,255,255),thickness=1)
 
-        cv2.imshow('frame', frame)
-        cv2.imshow('threshold', thresh_frame)
-        cv2.imshow('backgroundDiff', fgmask)
+        # cv2.imshow('frame', frame)
+        # cv2.imshow('threshold', thresh_frame)
+        # cv2.imshow('backgroundDiff', fgmask)
 
-        # Move windows so they are properly placed
-        cv2.moveWindow('frame', 100,100)
-        cv2.moveWindow('threshold', 700,100)
-        cv2.moveWindow('backgroundDiff', 700,560)
+        # # Move windows so they are properly placed
+        # cv2.moveWindow('frame', 100,100)
+        # cv2.moveWindow('threshold', 700,100)
+        # cv2.moveWindow('backgroundDiff', 700,560)
 
     else:
         switcher[mqtt_controller_preset]()
@@ -129,7 +133,7 @@ while(True):
 # When everything is done, release the capture
 cap.release()
 # Finally, close the window
-cv2.destroyAllWindows()
+#cv2.destroyAllWindows()
 cv2.waitKey(1)
 
 
