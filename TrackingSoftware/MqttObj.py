@@ -38,7 +38,7 @@ class MqttController:
 		#default values to use when need to reset
 		self.resetValues = {"on": True, "color": [255,255,255], "bri": 125, "seg":{"i": [0,100,"FFFFFF"]}}
 
-		self.detectionInput = {"on": True, "color": [255,255,255], "bri": 125, "seg":{"i": [0,100,"FFFFFF"]}}
+		self.detectionInput = {"on": True, "dc":"FF0000", "color": [255,255,255], "bri": 125, "seg":{"i": [0,100,"FFFFFF"]}}
 
 		self.input = {"on": True, "bri": 125, "seg":{"i": [0,100, "FF0000"]}}
 
@@ -53,7 +53,7 @@ class MqttController:
 	#Send tracking data to mqtt
 	def mqttTracking(self, trackingJson):
 		trackingJson = json.dumps(trackingJson)
-		print(trackingJson)
+		# print(trackingJson)
 
 		self.mqtt_client.publish("TrackingLights/leddriver/api", trackingJson)
 		return
@@ -118,30 +118,29 @@ class MqttController:
 		print("Patern3")
 		return
 
-
+	# x-mass tree
 	def preset1(self):
 
 		var = self.resetValues
 		
 		var['seg']['i'] = [0, 100, "FF0000"]
 		for x in range(0,100,2):
-			var['seg']['i'].append([x,x,"00FF00"])
+			var['seg']['i'].append([x,x+1,"00FF00"])
 			
 		first = json.dumps(var) 
 		
 		var['seg']['i'] = [0,100, "00FF00"]
 		for x in range(1,100, 2):
-			var['seg']['i'].append([x,x, "FF0000"])
+			var['seg']['i'].append([x,x+1, "FF0000"])
 		
 		second = json.dumps(var)
 
-		while(True):
-			
+		while(self.preset == 1):
+
 			self.mqtt_client.publish("TrackingLights/leddriver/api", first)
 			time.sleep(1)
 			self.mqtt_client.publish("TrackingLights/leddriver/api", second)
 			time.sleep(1)
-
 
 		return
 
@@ -152,6 +151,7 @@ class MqttController:
 		return
 
 	def preset420(self):
+		print("preset 420")
 		self.mqttUpdate()
 		return
 
