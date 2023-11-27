@@ -34,8 +34,12 @@ Case for power supply led's + ESP32: Since we want to hang our power supply behi
 Cabletray: We used this to put in our ledstrips. These help defusing the light
 
 support for cabletray: these were 3d printed to hold to cabletray onto the rails.
+<img width="536" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/61eeae69-4b6b-4d3e-8441-1cb5ffd2a1b8">
+
 
 Joints for cabletray: Since we need to connect multiple trays, we 3d printed some joints.
+<img width="412" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/0d146088-aeea-4482-9afa-474ef9cd9fe7">
+
 
 
 Required software:
