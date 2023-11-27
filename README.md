@@ -25,8 +25,6 @@ Camera: For the camera we chose the raspberry pi camera V2. The V2 is an 8mp cam
 
 Power supply raspberry pi: 5V
 
-Wiring: ....
-
 Optional hardware:
 ---------------------------------------------------------------------------------------
 Case for camera + raspberry pi: 
