@@ -5,13 +5,13 @@ RUN apt-get update && apt-get install -y \
 libopencv-dev 
 
 # Install Python dependencies
-RUN pip install opencv-python numpy paho-mqtt picamera
+RUN pip install opencv-python numpy paho-mqtt 
 
 
 WORKDIR /app
 COPY . /app
 
-CMD ["python", "piCameraPython.py"]
+CMD ["python", "TrackingLight.py"]
 
 
 

@@ -59,7 +59,7 @@ while(True):
         frame = cv2.resize(frame, (width, height))
 
         #Apply background subtraction
-        fgmask = fgbg.apply(frame, None, 0) 
+        fgmask = fgbg.apply(frame, None, 0.004) 
 
         #Blur out the edges
         gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)  
@@ -112,9 +112,9 @@ while(True):
         cv2.line(thresh_frame, (0,baseLineHeight), (width,baseLineHeight), (255,255,255),thickness=1)
         cv2.line(thresh_frame, (0,headLineHeight), (width,headLineHeight), (255,255,255),thickness=1)
 
-        #cv2.imshow('frame', frame)
-        # cv2.imshow('threshold', thresh_frame)
-        # cv2.imshow('backgroundDiff', fgmask)
+        cv2.imshow('frame', frame)
+        cv2.imshow('threshold', thresh_frame)
+        cv2.imshow('backgroundDiff', fgmask)
 
         # # Move windows so they are properly placed
         # cv2.moveWindow('frame', 100,100)
