@@ -112,7 +112,7 @@ while(True):
         cv2.line(thresh_frame, (0,baseLineHeight), (width,baseLineHeight), (255,255,255),thickness=1)
         cv2.line(thresh_frame, (0,headLineHeight), (width,headLineHeight), (255,255,255),thickness=1)
 
-        # cv2.imshow('frame', frame)
+        #cv2.imshow('frame', frame)
         # cv2.imshow('threshold', thresh_frame)
         # cv2.imshow('backgroundDiff', fgmask)
 
