@@ -12,7 +12,7 @@ lights = Lights()
 mqtt_controller = MqttController()
 
 # Initialize video capture
-cap = cv2.VideoCapture('mov/hallway1.mov')
+cap = cv2.VideoCapture('mov/newVideo.avi')
 
 # Create a background subtractor
 fgbg = cv2.createBackgroundSubtractorMOG2()
@@ -54,9 +54,11 @@ while(True):
 
         #Resize frame
         frame = cv2.resize(frame, (width, height))
+        frame = cv2.rotate(frame, cv2.ROTATE_180)
 
         #Apply background subtraction
-        fgmask = fgbg.apply(frame, None, 0) 
+        # Cuse of learning rate, ppl who stand still for longer period of time will not be tracked
+        fgmask = fgbg.apply(frame, None, 0.0004) 
 
         #Blur out the edges
         gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)  
@@ -71,7 +73,7 @@ while(True):
             
 
         for i in range(0,width, 6):
-            if thresh_frame[baseLineHeight][i] == 255 or thresh_frame[headLineHeight][i] == 255:
+            if thresh_frame[baseLineHeight][i] == 255 or thresh_frame[headLineHeight][i] == 255 or thresh_frame[200][i] == 255:
                 cv2.rectangle(frame, (i-3,baseLineHeight-3), (i+3,baseLineHeight+3), [34,0,255] ,-1)
                 #add detected pixels to list to be later grouped up
                 pixels.append(i)
@@ -105,6 +107,8 @@ while(True):
         # Draw guideline on the threshold frame as well
         cv2.line(thresh_frame, (0,baseLineHeight), (width,baseLineHeight), (255,255,255),thickness=1)
         cv2.line(thresh_frame, (0,headLineHeight), (width,headLineHeight), (255,255,255),thickness=1)
+        cv2.line(thresh_frame, (0,200), (width,200), (255,255,255),thickness=1)
+        
 
         cv2.imshow('frame', frame)
         cv2.imshow('threshold', thresh_frame)
