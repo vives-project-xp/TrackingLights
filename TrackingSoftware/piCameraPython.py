@@ -3,7 +3,7 @@ import cv2
 # Define the codec and create a VideoWriter object
 fourcc = cv2.VideoWriter_fourcc(*'XVID')  # Codec for the video file
 fps = 30.0  # Frames per second
-output_file = 'output_video.avi'  # Output video file name
+output_file = 'output_video6.avi'  # Output video file name
 video_capture = cv2.VideoCapture(0)  # Accessing the default webcam (change 0 to the appropriate index if multiple webcams are connected)
 
 # Get the default webcam's resolution
