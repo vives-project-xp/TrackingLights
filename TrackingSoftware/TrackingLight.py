@@ -12,7 +12,7 @@ lights = Lights()
 mqtt_controller = MqttController()
 
 # Initialize video capture
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('output_video6.avi')
 
 # Create a background subtractor
 fgbg = cv2.createBackgroundSubtractorMOG2()
@@ -58,8 +58,10 @@ while(True):
         #Resize frame
         frame = cv2.resize(frame, (width, height))
 
+        frame = cv2.rotate(frame, cv2.ROTATE_180)
+
         #Apply background subtraction
-        fgmask = fgbg.apply(frame, None, 0.004) 
+        fgmask = fgbg.apply(frame, None, 0.0004) 
 
         #Blur out the edges
         gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)  
