@@ -1,3 +1,4 @@
+import numpy as np
 
 
 class Lights:
@@ -50,6 +51,12 @@ class Lights:
       first_pixel = group[0]
       last_pixel = group[len(group)-1]
 
+      first_pixel = apply_exponential_offset(first_pixel)
+      last_pixel = apply_exponential_offset(last_pixel)
+
+      print(first_pixel)
+      print(last_pixel)
+
       # Divide by 6 > each segment of leds = 6leds
       first_pixel = int(group[0]/6)
       last_pixel = int(group[len(group)-1]/6)
@@ -58,6 +65,10 @@ class Lights:
       self.lightsJson["seg"]["i"].append(first_pixel-3)
       self.lightsJson["seg"]["i"].append(last_pixel+3)
       self.lightsJson["seg"]["i"].append(self.detectedColors)
+
+
+
+
 
       # self.lightsJson["seg"]["i"].append(first_pixel-1)
       # self.lightsJson["seg"]["i"].append(last_pixel+1)
@@ -71,3 +82,12 @@ class Lights:
 
   def getJson(self):
     return self.lightsJson
+
+def apply_exponential_offset(x):
+    offset_factor = 20
+    width = 600
+    
+    if x < width / 2:
+        return x - offset_factor 
+    else:
+        return np.floor(x)
