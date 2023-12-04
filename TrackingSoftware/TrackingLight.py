@@ -35,7 +35,7 @@ while(True):
     # baseLineHeight = 215
     # headLineHeight = 181
 
-    baseLineHeight = 20
+    baseLineHeight = 50
     headLineHeight = 60
     middleHeight = 40
 
@@ -52,7 +52,7 @@ while(True):
 
         # Capture frame-by-frame
         ret, frame = cap.read()
-        time.sleep(0.1)
+        # time.sleep(0.1)
         # find best resolution
         width = 600 # *3
         height = 360 # *3
