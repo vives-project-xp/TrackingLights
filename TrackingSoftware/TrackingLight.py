@@ -12,10 +12,10 @@ lights = Lights()
 mqtt_controller = MqttController()
 
 # Initialize video capture
-cap = cv2.VideoCapture('mov/hallway1.mov')
+cap = cv2.VideoCapture('mov/output_video5.avi')
 
 # Create a background subtractor
-fgbg = cv2.createBackgroundSubtractorMOG2()
+fgbg = cv2.createBackgroundSubtractorKNN()
 
 # Initialize initialState
 initialState = None
@@ -54,7 +54,7 @@ while(True):
 
         #Resize frame
         frame = cv2.resize(frame, (width, height))
-        # frame = cv2.rotate(frame, cv2.ROTATE_180)
+        frame = cv2.rotate(frame, cv2.ROTATE_180)
 
         #Apply background subtraction
         # Cuse of learning rate, ppl who stand still for longer period of time will not be tracked
