@@ -28,6 +28,7 @@ switcher = {
     3:mqtt_controller.preset3
 }
 
+print("Program Started...")
 while(True): 
 
     #Checking two heights for better detection
@@ -46,11 +47,11 @@ while(True):
 
         # Capture frame-by-frame
         ret, frame = cap.read()
-        if ret:
-            print("Jipla de pipla")
-        else:
-            print("nigga no")
-        time.sleep(0.03)
+        #if ret:
+        #    print("Jipla de pipla")
+        #else:
+        #    print("nigga no")
+        # time.sleep(0.03)
         # find best resolution
         width = 600 # *3
         height = 360 # *3
@@ -58,8 +59,10 @@ while(True):
         #Resize frame
         frame = cv2.resize(frame, (width, height))
 
+        frame = cv2.rotate(frame, cv2.ROTATE_180)   
+        
         #Apply background subtraction
-        fgmask = fgbg.apply(frame, None, 0.004) 
+        fgmask = fgbg.apply(frame, None, 0.0008) 
 
         #Blur out the edges
         gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)  
@@ -77,7 +80,7 @@ while(True):
         pixels = []
 
         for i in range(0,width, 6):
-            if thresh_frame[baseLineHeight][i] == 255 or thresh_frame[headLineHeight][i] == 255:
+            if thresh_frame[baseLineHeight][i] >= 127 or thresh_frame[headLineHeight][i] == 255 or thresh_frame[200][i] >= 127:
                 cv2.rectangle(frame, (i-3,baseLineHeight-3), (i+3,baseLineHeight+3), [34,0,255] ,-1)
                 #add detected pixels to list to be later grouped up
                 pixels.append(i)
@@ -112,9 +115,9 @@ while(True):
         cv2.line(thresh_frame, (0,baseLineHeight), (width,baseLineHeight), (255,255,255),thickness=1)
         cv2.line(thresh_frame, (0,headLineHeight), (width,headLineHeight), (255,255,255),thickness=1)
 
-        cv2.imshow('frame', frame)
-        cv2.imshow('threshold', thresh_frame)
-        cv2.imshow('backgroundDiff', fgmask)
+        # cv2.imshow('frame', frame)
+        # cv2.imshow('threshold', thresh_frame)
+        # cv2.imshow('backgroundDiff', fgmask)
 
         # # Move windows so they are properly placed
         # cv2.moveWindow('frame', 100,100)

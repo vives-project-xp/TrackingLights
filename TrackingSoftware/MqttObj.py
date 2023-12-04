@@ -47,7 +47,7 @@ class MqttController:
         # default values to use when need to reset
         self.resetValues = {"on": True, "color": [255, 255, 255], "bri": 125}
 
-        self.input = {"on": True, "color": [255, 255, 255], "bri": 125, "dc": "FF0000"}
+        self.input = {"on": True, "color": [255, 255, 255], "bri": 125, "dc": "ffa7a1"}
 
         self.preset = 0
 
@@ -60,7 +60,7 @@ class MqttController:
     # Send tracking data to mqtt
     def mqttTracking(self, trackingJson):
         trackingJson = json.dumps(trackingJson)
-        print(trackingJson)
+        #print(trackingJson)
 
         self.mqtt_client.publish("PM/Aurora/Aurora/leddriver/api", trackingJson)
         return

@@ -5,3 +5,5 @@ services:
     devices:
       - /dev/video0
     privileged: true
+    restart: on-failure
+
