@@ -32,8 +32,13 @@ switcher = {
 while(True): 
 
     #Checking two heights for better detection
-    baseLineHeight = 215
-    headLineHeight = 181
+    # baseLineHeight = 215
+    # headLineHeight = 181
+
+    baseLineHeight = 20
+    headLineHeight = 60
+    middleHeight = 40
+
 
     #Get active preset
     mqtt_controller_preset = mqtt_controller.getPreset()
@@ -55,6 +60,13 @@ while(True):
         #Resize frame
         frame = cv2.resize(frame, (width, height))
         frame = cv2.rotate(frame, cv2.ROTATE_180)
+        
+
+        # Define Region of Interest (ROI)
+        roi_x, roi_y, roi_width, roi_height = 20, 180, 540, 70  # Example values, adjust as needed
+
+        # Crop frame to ROI
+        frame = frame[roi_y:roi_y + roi_height, roi_x:roi_x + roi_width]
 
         #Apply background subtraction
         # Cuse of learning rate, ppl who stand still for longer period of time will not be tracked
@@ -72,8 +84,8 @@ while(True):
         thresh_frame = cv2.dilate(thresh_frame, None, iterations = 2)  
             
 
-        for i in range(0,width, 6):
-            if thresh_frame[baseLineHeight][i] == 255 or thresh_frame[headLineHeight][i] == 255 or thresh_frame[200][i] == 255:
+        for i in range(0,roi_width, 6):
+            if thresh_frame[baseLineHeight][i] == 255 or thresh_frame[headLineHeight][i] == 255 or thresh_frame[middleHeight][i] == 255:
                 cv2.rectangle(frame, (i-3,baseLineHeight-3), (i+3,baseLineHeight+3), [34,0,255] ,-1)
                 #add detected pixels to list to be later grouped up
                 pixels.append(i)
@@ -107,12 +119,13 @@ while(True):
         # Draw guideline on the threshold frame as well
         cv2.line(thresh_frame, (0,baseLineHeight), (width,baseLineHeight), (255,255,255),thickness=1)
         cv2.line(thresh_frame, (0,headLineHeight), (width,headLineHeight), (255,255,255),thickness=1)
-        cv2.line(thresh_frame, (0,200), (width,200), (255,255,255),thickness=1)
+        cv2.line(thresh_frame, (0,middleHeight), (width,middleHeight), (255,255,255),thickness=1)
         
 
         cv2.imshow('frame', frame)
         cv2.imshow('threshold', thresh_frame)
         cv2.imshow('backgroundDiff', fgmask)
+        # cv2.imshow('backgroundDiff', frame_roi)
 
         # Move windows so they are properly placed
         cv2.moveWindow('frame', 100,100)
