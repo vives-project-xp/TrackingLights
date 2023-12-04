@@ -12,7 +12,7 @@ class MqttController:
 		self.detected_topic = "TrackingLights/detected_color"
 
 		#Define mqtt broker
-		broker_address = "mqtt.devbit.be"
+		broker_address = "projectmaster.devbit.be"
 		port = 1883
 
 		#Initialize mqtt connection
@@ -53,7 +53,7 @@ class MqttController:
 	#Send tracking data to mqtt
 	def mqttTracking(self, trackingJson):
 		trackingJson = json.dumps(trackingJson)
-		# print(trackingJson)
+		print(trackingJson)
 
 		self.mqtt_client.publish("TrackingLights/leddriver/api", trackingJson)
 		return

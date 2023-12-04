@@ -12,7 +12,7 @@ lights = Lights()
 mqtt_controller = MqttController()
 
 # Initialize video capture
-cap = cv2.VideoCapture('mov/newVideo.avi')
+cap = cv2.VideoCapture('mov/hallway1.mov')
 
 # Create a background subtractor
 fgbg = cv2.createBackgroundSubtractorMOG2()
@@ -54,11 +54,11 @@ while(True):
 
         #Resize frame
         frame = cv2.resize(frame, (width, height))
-        frame = cv2.rotate(frame, cv2.ROTATE_180)
+        # frame = cv2.rotate(frame, cv2.ROTATE_180)
 
         #Apply background subtraction
         # Cuse of learning rate, ppl who stand still for longer period of time will not be tracked
-        fgmask = fgbg.apply(frame, None, 0.0004) 
+        fgmask = fgbg.apply(frame, None, 0.0008) 
 
         #Blur out the edges
         gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)  
