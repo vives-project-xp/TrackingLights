@@ -1,19 +1,27 @@
 import paho.mqtt.client as mqtt
 import json
 import time
+import MQTTCRED
 class MqttController:
 
 	def __init__(self):
 		# Define MQTT topics
-		self.brightness_topic = "TrackingLights/brightness"
-		self.color_topic = "TrackingLights/color"
-		self.on_off_topic = "TrackingLights/on_off"
-		self.preset_topic = "TrackingLights/preset"
-		self.detected_topic = "TrackingLights/detected_color"
+		self.brightness_topic = "PM/Aurora/Aurora/brightness"
+		self.color_topic = "PM/Aurora/Aurora/color"
+		self.on_off_topic = "PM/Aurora/Aurora/on_off"
+		self.preset_topic = "PM/Aurora/Aurora/preset"
+		self.detected_topic = "PM/Aurora/Aurora/detected_color"
+		self.api_topic = "PM/Aurora/Aurora/leddriver/api"
+
+
+		# PROJECT MASTER COMMANDS
+		self.ProjectMasterTopic = "PM/Aurora/Aurora/"
 
 		#Define mqtt broker
 		broker_address = "projectmaster.devbit.be"
 		port = 1883
+		username = MQTTCRED.USERNAME
+		password = MQTTCRED.PASSWORD
 
 		#Initialize mqtt connection
 		self.mqtt_client = mqtt.Client()
@@ -21,19 +29,18 @@ class MqttController:
 		self.mqtt_client.on_connect = self.on_connect
 		self.mqtt_client.on_message = self.mqttRecieve
 
-
+		self.mqtt_client.username_pw_set(username, password)
 		self.mqtt_client.connect(broker_address, port, 60)
 
 		# Subscribe to topics on successful connection
 		self.mqtt_client.subscribe([(self.brightness_topic, 0), (self.color_topic, 0),
-																(self.on_off_topic, 0), (self.preset_topic, 0), (self.detected_topic,0)])
+																(self.on_off_topic, 0), (self.preset_topic, 0), (self.detected_topic,0), (self.ProjectMasterTopic, 0)])
 
 		self.mqtt_client.loop_start()
 
 
 		self.preset = 0
 		self.color = "FFFFFF"
-
 
 		#default values to use when need to reset
 		self.resetValues = {"on": True, "color": [255,255,255], "bri": 125, "seg":{"i": [0,100,"FFFFFF"]}}
@@ -55,7 +62,7 @@ class MqttController:
 		trackingJson = json.dumps(trackingJson)
 		print(trackingJson)
 
-		self.mqtt_client.publish("TrackingLights/leddriver/api", trackingJson)
+		self.mqtt_client.publish(self.api_topic, trackingJson)
 		return
 
 	def mqttRecieve(self, client, userdata, message):
@@ -93,9 +100,20 @@ class MqttController:
 			if 'on' in received_data:
 					self.input['on'] = received_data["on"]
 					print(received_data["on"])
+
 			if 'pr' in received_data:
 					self.preset = received_data['pr']
 					print(received_data["pr"])
+
+			#ProjectMastser
+			if 'rgb' in received_data:
+				self.color = received_data['rgb']
+			if 'command' in received_data:
+				if received_data['command'] == "ON":
+					self.input['on'] = True
+				else:
+					self.input['on'] = False
+				
 
 
 		except json.JSONDecodeError as e:
@@ -106,7 +124,7 @@ class MqttController:
 
 		jsonConvert = json.dumps(self.input)
 		print(jsonConvert)
-		self.mqtt_client.publish("TrackingLights/leddriver/api", jsonConvert)
+		self.mqtt_client.publish(self.api_topic, jsonConvert)
 		time.sleep(1)
 		return	
 
@@ -137,9 +155,9 @@ class MqttController:
 
 		while(self.preset == 1):
 
-			self.mqtt_client.publish("TrackingLights/leddriver/api", first)
+			self.mqtt_client.publish(self.api_topic, first)
 			time.sleep(1)
-			self.mqtt_client.publish("TrackingLights/leddriver/api", second)
+			self.mqtt_client.publish(self.api_topic, second)
 			time.sleep(1)
 
 		return
