@@ -13,9 +13,7 @@ class Lights:
   
   def groupingPixels(self, pixels, input):
     
-    if input['dc']:
-      self.detectedColors = input['dc']
-
+    self.detectedColors = input['dc']
     self.notDetected = input['color']
 
     self.lightsJson = { 
