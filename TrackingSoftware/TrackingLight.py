@@ -12,7 +12,7 @@ lights = Lights()
 mqtt_controller = MqttController()
 
 # Initialize video capture
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('output_video6.avi')
 
 # Create a background subtractor
 fgbg = cv2.createBackgroundSubtractorMOG2()
