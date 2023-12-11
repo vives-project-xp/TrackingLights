@@ -116,6 +116,8 @@ pin: GND = de grounding van de LED's, deze sluit je aan aan de witte wire van LE
 
 pin: 2 = data, deze sluit je aan aan de groene wire van LED's
 
+<img width="344" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/f6251401-1f6a-4efd-876b-f74a726a33c1">
+
 
 
 2) Aansluiten raspberry pi.
