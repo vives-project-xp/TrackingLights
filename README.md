@@ -118,9 +118,10 @@ pin: 2 = data, deze sluit je aan aan de groene wire van LED's
 
 
 
-
-Voor pi
+2) Aansluiten raspberry pi.
 -
+(sd kaart)
+3) Nodige software.
 
 -get docker.sh runnen (docker dowloaden)
 
