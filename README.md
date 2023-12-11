@@ -147,7 +147,16 @@ docker compose up.
 
 -dockercontainer starten (blijft runnen, tot jij afzet)
 ----------------
+reposi copieren.
 
+
+<img width="456" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/ff813af7-b6b9-44fd-b4d2-b024d8884dde">
+
+powershell openen.
+
+<img width="764" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/017091e5-2627-443d-9011-389fb7df4190">
+
+camera activeren.
 
 -------------------------------------------------------------------------------
 ## Metingen
