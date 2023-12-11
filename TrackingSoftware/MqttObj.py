@@ -157,8 +157,8 @@ class MqttController:
 
 		return
 
-	def preset420(self):
-		print("preset 420")
+	def default(self):
+		print("preset 0")
 		self.mqttUpdate()
 		return
 
