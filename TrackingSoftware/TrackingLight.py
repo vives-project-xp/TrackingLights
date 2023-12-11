@@ -37,10 +37,6 @@ while(True):
     middleHeight = 200
     headLineHeight = 181
 
-    # baseLineHeight = 35
-    # headLineHeight = 45
-    # middleHeight = 40
-
 
     #Get active preset
     mqtt_controller_preset = mqtt_controller.getPreset()
@@ -54,7 +50,6 @@ while(True):
 
         # Capture frame-by-frame
         ret, frame = cap.read()
-
         # find best resolution
         width = 600 # *3
         height = 360 # *3
@@ -70,20 +65,13 @@ while(True):
         #Blur out the edges
         gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)  
 
-        # we will assign grayFrame to initalState if is none  
-        if initialState is None:  
-            initialState = gray_frame  
-            continue  
 
         thresh_frame = cv2.threshold(gray_frame, 100, 255, cv2.THRESH_BINARY)[1]  
         thresh_frame = cv2.dilate(thresh_frame, None, iterations = 2)  
                 
 
-        # Create a copy of the 'leds' list
-        pixels = []
-
         for i in range(0,width, 6):
-            if thresh_frame[baseLineHeight][i] >= 127 or thresh_frame[headLineHeight][i] == 255 or thresh_frame[200][i] >= 127 or thresh_frame[200][i] == 255:
+            if thresh_frame[baseLineHeight][i] == 255 or thresh_frame[headLineHeight][i] == 255 or thresh_frame[200][i] == 255:
                 cv2.rectangle(frame, (i-3,baseLineHeight-3), (i+3,baseLineHeight+3), [34,0,255] ,-1)
                 #add detected pixels to list to be later grouped up
                 pixels.append(i)
@@ -121,9 +109,9 @@ while(True):
         cv2.line(thresh_frame, (0,middleHeight), (width,middleHeight), (255,255,255),thickness=1)
         
 
-        # cv2.imshow('frame', frame)
-        # cv2.imshow('threshold', thresh_frame)
-        # cv2.imshow('backgroundDiff', fgmask)
+        cv2.imshow('frame', frame)
+        cv2.imshow('threshold', thresh_frame)
+        cv2.imshow('backgroundDiff', fgmask)
 
         # # Move windows so they are properly placed
         # cv2.moveWindow('frame', 100,100)
