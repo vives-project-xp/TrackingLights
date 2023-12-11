@@ -12,10 +12,10 @@ lights = Lights()
 mqtt_controller = MqttController()
 
 # Initialize video capture
-cap = cv2.VideoCapture('output_video6.avi')
+cap = cv2.VideoCapture('mov/hallway1.mov')
 
 # Create a background subtractor
-fgbg = cv2.createBackgroundSubtractorMOG2()
+fgbg = cv2.createBackgroundSubtractorKNN()
 
 # Initialize initialState
 initialState = None
@@ -25,14 +25,21 @@ switcher = {
     0:mqtt_controller.mqttTracking, 
     1:mqtt_controller.preset1,
     2:mqtt_controller.preset2,
-    3:mqtt_controller.preset3
+    3:mqtt_controller.preset3,
+    420:mqtt_controller.preset420
 }
 
+print("Program Started...")
 while(True): 
 
     #Checking two heights for better detection
-    baseLineHeight = 215
-    headLineHeight = 181
+    # baseLineHeight = 215
+    # headLineHeight = 181
+
+    baseLineHeight = 35
+    headLineHeight = 45
+    middleHeight = 40
+
 
     #Get active preset
     mqtt_controller_preset = mqtt_controller.getPreset()
@@ -46,22 +53,24 @@ while(True):
 
         # Capture frame-by-frame
         ret, frame = cap.read()
-        if ret:
-            print("Jipla de pipla")
-        else:
-            print("nigga no")
-        time.sleep(0.03)
+        time.sleep(0.1)
         # find best resolution
         width = 600 # *3
         height = 360 # *3
 
         #Resize frame
         frame = cv2.resize(frame, (width, height))
-
         frame = cv2.rotate(frame, cv2.ROTATE_180)
+        
+        # Define Region of Interest (ROI)
+        roi_x, roi_y, roi_width, roi_height = 0, 180, 600, 70  # Example values, adjust as needed
+
+        # Crop frame to ROI
+        frame = frame[roi_y:roi_y + roi_height, roi_x:roi_x + roi_width]
 
         #Apply background subtraction
-        fgmask = fgbg.apply(frame, None, 0.0004) 
+        # Cuse of learning rate, ppl who stand still for longer period of time will not be tracked
+        fgmask = fgbg.apply(frame, None, 0.0008) 
 
         #Blur out the edges
         gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)  
@@ -79,13 +88,13 @@ while(True):
         pixels = []
 
         for i in range(0,width, 6):
-            if thresh_frame[baseLineHeight][i] == 255 or thresh_frame[headLineHeight][i] == 255:
+            if thresh_frame[baseLineHeight][i] >= 127 or thresh_frame[headLineHeight][i] == 255 or thresh_frame[200][i] >= 127 or thresh_frame[200][i] == 255:
                 cv2.rectangle(frame, (i-3,baseLineHeight-3), (i+3,baseLineHeight+3), [34,0,255] ,-1)
                 #add detected pixels to list to be later grouped up
                 pixels.append(i)
 
         #Send detected pixels list to grouping function
-        pixels_group = lights.groupingPixels(pixels, mqtt_controller.getInput())
+        pixels_group = lights.groupingPixels(pixels, mqtt_controller.getDetectionInput())
 
 
 
@@ -109,14 +118,17 @@ while(True):
         # draw guideline which pixels are checked
         cv2.line(frame, (0,baseLineHeight), (width,baseLineHeight), (0,255,0),thickness=1)
         cv2.line(frame, (0,headLineHeight), (width,headLineHeight), (0,255,0),thickness=1)
+        cv2.line(frame, (0,middleHeight), (width,middleHeight), (255,255,255),thickness=1)
 
         # Draw guideline on the threshold frame as well
         cv2.line(thresh_frame, (0,baseLineHeight), (width,baseLineHeight), (255,255,255),thickness=1)
         cv2.line(thresh_frame, (0,headLineHeight), (width,headLineHeight), (255,255,255),thickness=1)
+        cv2.line(thresh_frame, (0,middleHeight), (width,middleHeight), (255,255,255),thickness=1)
+        
 
-        cv2.imshow('frame', frame)
-        cv2.imshow('threshold', thresh_frame)
-        cv2.imshow('backgroundDiff', fgmask)
+        # cv2.imshow('frame', frame)
+        # cv2.imshow('threshold', thresh_frame)
+        # cv2.imshow('backgroundDiff', fgmask)
 
         # # Move windows so they are properly placed
         # cv2.moveWindow('frame', 100,100)
@@ -137,6 +149,3 @@ cap.release()
 # Finally, close the window
 #cv2.destroyAllWindows()
 cv2.waitKey(1)
-
-
-
