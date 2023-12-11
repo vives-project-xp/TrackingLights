@@ -11,7 +11,7 @@ RUN pip install opencv-python numpy paho-mqtt
 WORKDIR /app
 COPY . /app
 
-CMD ["python", "TrackingLight.py"]
+CMD ["python", "..\TrackingSoftware\TrackingLight.py"]
 
 
 

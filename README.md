@@ -4,12 +4,12 @@ Within this project we will create a LED strip that follows the passing people. 
 The lightstrip is 10 meters long. The strip itself is powered by an 24V powersupply and controlled by an ESP32, which, in turn, receives input from the raspberry pi. This raspberry pi is connected with a camera to monitor the light strip at the opposite side of the building. The camera and raspberry pi are hidden away behind glass. 
 
 
-Table of contents:
+## Table of contents:
 -------------------------------------------------------------------------------------------------------
 ...
 
 
-Required hardware: 
+## Required hardware: 
 ----------------------------------------------------------------------------------------------------------
 Led strips: we use the tm1814 leds. These operate at 24V
 
@@ -25,7 +25,7 @@ Camera: For the camera we chose the raspberry pi camera V2. The V2 is an 8mp cam
 
 Power supply raspberry pi: 5V
 
-Optional hardware:
+## Optional hardware:
 ---------------------------------------------------------------------------------------
 Case for camera + raspberry pi: 
 
@@ -42,7 +42,7 @@ Joints for cabletray: Since we need to connect multiple trays, we 3d printed som
 
 
 
-Required software:
+## Required software:
 --------------------------------------------------------------------------------------------
 MQTT: 
 
@@ -50,17 +50,17 @@ WLED: Since we did not find any excisting libraries for the tm1814(ledstrip), we
 
 Python: 
 
-Communication between devices:
+## Communication between devices:
 ------------------------------------------------------------------
 <img width="460" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/991873ee-3a01-4c94-b453-779dc50f9773">
 
 
 
-Schematics + flowchart:
+## Schematics + flowchart:
 ---------------------------------------------------------------------------------------------
 <img width="460" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/61e99522-55ce-46ce-83c7-ac4cafe26142">
 
-Files
+## Files
 --------------------------------------------------------------------------------------------
 3d prints: these contain all our 3d printing files that we used in this project.
 
@@ -96,9 +96,52 @@ TrackingSoftware:
   -trackingLight: main project.
  
 
-
-How to use the trackinglights:
+## How to use the trackinglights:
 --------------------------------------------------------------------------------------------
+1) Het aansluiten van alle hardware.
+   
+-Led strips aansluiten op de 24V voeding (in ons geval x ampere). De ledstrips hebben een wit (ground) en rode (24V)     aansluiting. Je sluit deze parallel aan aan de bron. 
+
+-Je sluit de 24V bron aan (in ons geval x ampere).
+
+-Je sluit de ledstrips parallel aan. De ledstrips hebben een witte (ground) en rode (24V) aansluiting
+
+-Je sluit de 24V-5V converter aan de 24V bron. De 5V uitgang zullen we nodig hebben voor het voeden van onze ESP32
+
+-Je sluit de ESP32 aan aan de juiste zijde van de ledstrip
+
+pin: 5V = 5V van converter
+
+pin: GND = de grounding van de LED's, deze sluit je aan aan de witte wire van LED's
+
+pin: 2 = data, deze sluit je aan aan de groene wire van LED's
+
+<img width="344" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/f6251401-1f6a-4efd-876b-f74a726a33c1">
+
+2) SD kaart.
+   
+-raspberry pi imager de software van keuze installeren. 
+
+3) Aansluiten raspberry pi.
+   
+-Sd kaart aansluiten
+
+-Voeding aansluiten
+
+-Camera aansluiten
+
+4) Nodige software.
+
+-get docker.sh runnen (docker dowloaden)
+
+-reposi copieren
+
+-camera activeren (voor docker) (moet alleen maar als je pi 4 of ouder is)
+
+-dockercontainer starten (blijft runnen, tot jij afzet)
+
+
+
 
 
 

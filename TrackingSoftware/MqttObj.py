@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 import json
 import time
-import MQTTCRED
+import credentials
 class MqttController:
 
 	def __init__(self):
@@ -20,8 +20,8 @@ class MqttController:
 		#Define mqtt broker
 		broker_address = "projectmaster.devbit.be"
 		port = 1883
-		username = MQTTCRED.USERNAME
-		password = MQTTCRED.PASSWORD
+		username = credentials.USERNAME
+		password = credentials.PASSWORD
 
 		#Initialize mqtt connection
 		self.mqtt_client = mqtt.Client()
