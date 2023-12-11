@@ -96,10 +96,12 @@ TrackingSoftware:
   -trackingLight: main project.
  
 
-
 ## How to use the trackinglights:
 --------------------------------------------------------------------------------------------
-
+-get docker.sh runnen
+-docker dowload
+-reposi copieren
+-camera activeren (voor docker)  
 
 
 
