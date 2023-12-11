@@ -22,10 +22,13 @@ initialState = None
 
 #siwtch case for different presets
 switcher = {
-    0:mqtt_controller.mqttTracking, 
-    1:mqtt_controller.preset1,
-    420:mqtt_controller.preset420
+    0:mqtt_controller.default,
+    1:mqtt_controller.mqttTracking, 
+    2:mqtt_controller.preset1,
+    
 }
+switcherCount = 3
+
 frames = 0
 print("Program Started...")
 while(True): 
@@ -39,12 +42,15 @@ while(True):
     #Get active preset
     mqtt_controller_preset = mqtt_controller.getPreset()
 
+    if mqtt_controller_preset > switcherCount:
+        mqtt_controller_preset = 0
+
     #Initialize list for detected pixels
     pixels = []
 
     # if default preset: start video and
     # and change lights if detected movement
-    if(mqtt_controller_preset == 0):
+    if(mqtt_controller_preset == 1):
         frames += 1
 
         # Capture frame-by-frame
