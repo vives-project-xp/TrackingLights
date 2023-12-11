@@ -12,7 +12,7 @@ lights = Lights()
 mqtt_controller = MqttController()
 
 # Initialize video capture
-cap = cv2.VideoCapture('mov/hallway1.mov')
+cap = cv2.VideoCapture('mov/output_video5.avi')
 
 # Create a background subtractor
 fgbg = cv2.createBackgroundSubtractorKNN()
@@ -24,11 +24,9 @@ initialState = None
 switcher = {
     0:mqtt_controller.mqttTracking, 
     1:mqtt_controller.preset1,
-    2:mqtt_controller.preset2,
-    3:mqtt_controller.preset3,
     420:mqtt_controller.preset420
 }
-
+frames = 0
 print("Program Started...")
 while(True): 
 
@@ -47,12 +45,14 @@ while(True):
     # if default preset: start video and
     # and change lights if detected movement
     if(mqtt_controller_preset == 0):
+        frames += 1
 
         # Capture frame-by-frame
         ret, frame = cap.read()
         # find best resolution
         width = 600 # *3
         height = 360 # *3
+        time.sleep(0.01)
 
         #Resize frame
         frame = cv2.resize(frame, (width, height))
@@ -63,11 +63,9 @@ while(True):
         fgmask = fgbg.apply(frame, None, 0.0008) 
 
         #Blur out the edges
-        gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)  
-
-
-        thresh_frame = cv2.threshold(gray_frame, 100, 255, cv2.THRESH_BINARY)[1]  
-        thresh_frame = cv2.dilate(thresh_frame, None, iterations = 2)  
+        gray_frame = cv2.GaussianBlur(fgmask, (17,17), 0)             
+            
+        thresh_frame = cv2.threshold(gray_frame,20,255, cv2.THRESH_BINARY)[1]
                 
 
         for i in range(0,width, 6):
@@ -109,9 +107,10 @@ while(True):
         cv2.line(thresh_frame, (0,middleHeight), (width,middleHeight), (255,255,255),thickness=1)
         
 
-        cv2.imshow('frame', frame)
-        cv2.imshow('threshold', thresh_frame)
-        cv2.imshow('backgroundDiff', fgmask)
+        # cv2.imshow('frame', frame)
+        # cv2.imshow('gray_frame', gray_frame)
+        # cv2.imshow('threshold', thresh_frame)
+        # cv2.imshow('backgroundDiff', fgmask)
 
         # # Move windows so they are properly placed
         # cv2.moveWindow('frame', 100,100)
