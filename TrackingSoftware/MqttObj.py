@@ -60,7 +60,7 @@ class MqttController:
 	#Send tracking data to mqtt
 	def mqttTracking(self, trackingJson):
 		trackingJson = json.dumps(trackingJson)
-		# print(trackingJson)
+		#print(trackingJson)
 
 		self.mqtt_client.publish(self.api_topic, trackingJson)
 		return

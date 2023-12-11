@@ -15,7 +15,7 @@ Led strips: we use the tm1814 leds. These operate at 24V
 
 Esp32: This is used to control the led's. The ESP receives data from the raspberry pi
 
-Power supply led's + Esp32: Here we used a 24V+15A power supply, since the esp32 draws power (5v) from the leds we don't need to make any adaptations to power it. The led's have an average usage of 5A. So by using a power supply which could supply 15A, we have room for error.
+Power supply led's + Esp32: Here we used a 24V+8A power supply. The led's have an average usage of 5A. So by using a power supply which could supply 8A, we have room for error.
 
 24V-5V converter: Since the ESP32 runs on 5V, a converter is placed between the power supply of the leds and the ESP32.
 
@@ -24,8 +24,6 @@ raspberry pi: This will convert the raw footage from the camera into values, whi
 Camera: For the camera we chose the raspberry pi camera V2. The V2 is an 8mp camera with the sony IMX219 sensor, the camera is easy to work with but has potential for more complicated things. This will connect to the raspberry pi.
 
 Power supply raspberry pi: 5V
-
-Wiring: ....
 
 Optional hardware:
 ---------------------------------------------------------------------------------------
@@ -36,8 +34,12 @@ Case for power supply led's + ESP32: Since we want to hang our power supply behi
 Cabletray: We used this to put in our ledstrips. These help defusing the light
 
 support for cabletray: these were 3d printed to hold to cabletray onto the rails.
+<img width="536" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/61eeae69-4b6b-4d3e-8441-1cb5ffd2a1b8">
+
 
 Joints for cabletray: Since we need to connect multiple trays, we 3d printed some joints.
+<img width="412" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/0d146088-aeea-4482-9afa-474ef9cd9fe7">
+
 
 
 Required software:
@@ -63,7 +65,7 @@ Schematics + flowchart:
 
 How to use the trackinglights:
 --------------------------------------------------------------------------------------------
-....
+
 
 
 
