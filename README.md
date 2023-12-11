@@ -4,12 +4,12 @@ Within this project we will create a LED strip that follows the passing people. 
 The lightstrip is 10 meters long. The strip itself is powered by an 24V powersupply and controlled by an ESP32, which, in turn, receives input from the raspberry pi. This raspberry pi is connected with a camera to monitor the light strip at the opposite side of the building. The camera and raspberry pi are hidden away behind glass. 
 
 
-Table of contents:
+##Table of contents:
 -------------------------------------------------------------------------------------------------------
 ...
 
 
-Required hardware: 
+##Required hardware: 
 ----------------------------------------------------------------------------------------------------------
 Led strips: we use the tm1814 leds. These operate at 24V
 
@@ -25,7 +25,7 @@ Camera: For the camera we chose the raspberry pi camera V2. The V2 is an 8mp cam
 
 Power supply raspberry pi: 5V
 
-Optional hardware:
+##Optional hardware:
 ---------------------------------------------------------------------------------------
 Case for camera + raspberry pi: 
 
@@ -42,7 +42,7 @@ Joints for cabletray: Since we need to connect multiple trays, we 3d printed som
 
 
 
-Required software:
+##Required software:
 --------------------------------------------------------------------------------------------
 MQTT: 
 
@@ -50,17 +50,17 @@ WLED: Since we did not find any excisting libraries for the tm1814(ledstrip), we
 
 Python: 
 
-Communication between devices:
+##Communication between devices:
 ------------------------------------------------------------------
 <img width="460" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/991873ee-3a01-4c94-b453-779dc50f9773">
 
 
 
-Schematics + flowchart:
+##Schematics + flowchart:
 ---------------------------------------------------------------------------------------------
 <img width="460" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/61e99522-55ce-46ce-83c7-ac4cafe26142">
 
-Files
+##Files
 --------------------------------------------------------------------------------------------
 3d prints: these contain all our 3d printing files that we used in this project.
 
@@ -97,7 +97,7 @@ TrackingSoftware:
  
 
 
-How to use the trackinglights:
+##How to use the trackinglights:
 --------------------------------------------------------------------------------------------
 
 
