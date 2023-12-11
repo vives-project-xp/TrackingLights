@@ -5,7 +5,7 @@ class Lights:
 
     #Define colors
     self.notDetected = 'FFFFFF'
-    self.detectedColors = "FF0000"
+    self.detectedColors = "#ffa7a1"
 
     self.lightsJson = {}
 

@@ -29,6 +29,7 @@ switcher = {
     420:mqtt_controller.preset420
 }
 
+print("Program Started...")
 while(True): 
 
     #Checking two heights for better detection
@@ -76,7 +77,7 @@ while(True):
         pixels = []
 
         for i in range(0,width, 6):
-            if thresh_frame[baseLineHeight][i] == 255 or thresh_frame[headLineHeight][i] == 255 or thresh_frame[200][i] == 255:
+            if thresh_frame[baseLineHeight][i] >= 127 or thresh_frame[headLineHeight][i] == 255 or thresh_frame[200][i] >= 127 or thresh_frame[200][i] == 255:
                 cv2.rectangle(frame, (i-3,baseLineHeight-3), (i+3,baseLineHeight+3), [34,0,255] ,-1)
                 #add detected pixels to list to be later grouped up
                 pixels.append(i)
@@ -113,9 +114,9 @@ while(True):
         cv2.line(thresh_frame, (0,200), (width,200), (255,255,255),thickness=1)
         
 
-        cv2.imshow('frame', frame)
-        cv2.imshow('threshold', thresh_frame)
-        cv2.imshow('backgroundDiff', fgmask)
+        # cv2.imshow('frame', frame)
+        # cv2.imshow('threshold', thresh_frame)
+        # cv2.imshow('backgroundDiff', fgmask)
 
         # # Move windows so they are properly placed
         # cv2.moveWindow('frame', 100,100)
