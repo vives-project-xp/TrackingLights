@@ -136,12 +136,21 @@ pin: 2 = data, deze sluit je aan aan de groene wire van LED's
 
 -get docker.sh runnen (docker dowloaden)
 
+curl -fsSL https://get.docker.com/ -o get-docker.sh
+sh get-docker.sh
+
+docker compose up.
+
 -reposi copieren
 
 -camera activeren (voor docker) (moet alleen maar als je pi 4 of ouder is)
 
 -dockercontainer starten (blijft runnen, tot jij afzet)
+----------------
 
+
+-------------------------------------------------------------------------------
+## Metingen
 
 
 
