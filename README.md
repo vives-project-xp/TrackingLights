@@ -98,7 +98,7 @@ TrackingSoftware:
 
 ## How to use the trackinglights:
 --------------------------------------------------------------------------------------------
-1) Het aansluiten van alle hardware.
+*1) Het aansluiten van alle hardware.
    
 -Led strips aansluiten op de 24V voeding (in ons geval x ampere). De ledstrips hebben een wit (ground) en rode (24V)     aansluiting. Je sluit deze parallel aan aan de bron. 
 
@@ -118,11 +118,11 @@ pin: 2 = data, deze sluit je aan aan de groene wire van LED's
 
 <img width="344" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/f6251401-1f6a-4efd-876b-f74a726a33c1">
 
-2) SD kaart.
+*2) SD kaart.
    
 -raspberry pi imager de software van keuze installeren. 
 
-3) Aansluiten raspberry pi.
+*3) Aansluiten raspberry pi.
    
 -Sd kaart aansluiten
 
@@ -130,7 +130,7 @@ pin: 2 = data, deze sluit je aan aan de groene wire van LED's
 
 -Camera aansluiten
 
-4) Nodige software.
+*4) Nodige software.
 
 -get docker.sh runnen (docker dowloaden)
 
