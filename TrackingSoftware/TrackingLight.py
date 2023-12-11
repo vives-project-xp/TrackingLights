@@ -109,9 +109,9 @@ while(True):
         cv2.line(thresh_frame, (0,middleHeight), (width,middleHeight), (255,255,255),thickness=1)
         
 
-        cv2.imshow('frame', frame)
-        cv2.imshow('threshold', thresh_frame)
-        cv2.imshow('backgroundDiff', fgmask)
+        # cv2.imshow('frame', frame)
+        # cv2.imshow('threshold', thresh_frame)
+        # cv2.imshow('backgroundDiff', fgmask)
 
         # # Move windows so they are properly placed
         # cv2.moveWindow('frame', 100,100)
