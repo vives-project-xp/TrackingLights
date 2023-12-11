@@ -33,12 +33,13 @@ print("Program Started...")
 while(True): 
 
     #Checking two heights for better detection
-    # baseLineHeight = 215
-    # headLineHeight = 181
+    baseLineHeight = 215
+    middleHeight = 200
+    headLineHeight = 181
 
-    baseLineHeight = 35
-    headLineHeight = 45
-    middleHeight = 40
+    # baseLineHeight = 35
+    # headLineHeight = 45
+    # middleHeight = 40
 
 
     #Get active preset
@@ -53,7 +54,7 @@ while(True):
 
         # Capture frame-by-frame
         ret, frame = cap.read()
-        time.sleep(0.1)
+
         # find best resolution
         width = 600 # *3
         height = 360 # *3
@@ -62,12 +63,6 @@ while(True):
         frame = cv2.resize(frame, (width, height))
         frame = cv2.rotate(frame, cv2.ROTATE_180)
         
-        # Define Region of Interest (ROI)
-        roi_x, roi_y, roi_width, roi_height = 0, 180, 600, 70  # Example values, adjust as needed
-
-        # Crop frame to ROI
-        frame = frame[roi_y:roi_y + roi_height, roi_x:roi_x + roi_width]
-
         #Apply background subtraction
         # Cuse of learning rate, ppl who stand still for longer period of time will not be tracked
         fgmask = fgbg.apply(frame, None, 0.0008) 
