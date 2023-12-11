@@ -1,0 +1,9 @@
+version: '3'
+services:
+  aurora:
+    build: .
+    devices:
+      - /dev/video0
+    privileged: true
+    restart: on-failure
+

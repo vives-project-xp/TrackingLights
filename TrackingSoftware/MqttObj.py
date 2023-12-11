@@ -39,7 +39,7 @@ class MqttController:
 		self.mqtt_client.loop_start()
 
 
-		self.preset = 0
+		self.preset = 1
 		self.color = "FFFFFF"
 
 		#default values to use when need to reset

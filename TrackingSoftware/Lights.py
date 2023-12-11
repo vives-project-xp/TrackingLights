@@ -54,8 +54,8 @@ class Lights:
       first_pixel = apply_exponential_offset(first_pixel)
       last_pixel = apply_exponential_offset(last_pixel)
 
-      print(first_pixel)
-      print(last_pixel)
+      # print(first_pixel)
+      # print(last_pixel)
 
       # Divide by 6 > each segment of leds = 6leds
       first_pixel = int(group[0]/6)
