@@ -60,7 +60,17 @@ Schematics + flowchart:
 ---------------------------------------------------------------------------------------------
 <img width="460" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/61e99522-55ce-46ce-83c7-ac4cafe26142">
 
+Files
+--------------------------------------------------------------------------------------------
+3d prints: these contain all our 3d printing files that we used in this project.
 
+LED coding:
+  -LED-coding: 
+  -ledtest:
+  -TM1814:
+  -wled:
+
+TrackingSoftware: 
 
 
 How to use the trackinglights:
