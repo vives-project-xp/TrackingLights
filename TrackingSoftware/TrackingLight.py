@@ -12,7 +12,7 @@ lights = Lights()
 mqtt_controller = MqttController()
 
 # Initialize video capture
-cap = cv2.VideoCapture('mov/output_video5.avi')
+cap = cv2.VideoCapture('mov/hallway1.mov')
 
 # Create a background subtractor
 fgbg = cv2.createBackgroundSubtractorKNN()
@@ -33,8 +33,13 @@ print("Program Started...")
 while(True): 
 
     #Checking two heights for better detection
-    baseLineHeight = 215
-    headLineHeight = 181
+    # baseLineHeight = 215
+    # headLineHeight = 181
+
+    baseLineHeight = 35
+    headLineHeight = 45
+    middleHeight = 40
+
 
     #Get active preset
     mqtt_controller_preset = mqtt_controller.getPreset()
@@ -56,6 +61,12 @@ while(True):
         #Resize frame
         frame = cv2.resize(frame, (width, height))
         frame = cv2.rotate(frame, cv2.ROTATE_180)
+        
+        # Define Region of Interest (ROI)
+        roi_x, roi_y, roi_width, roi_height = 0, 180, 600, 70  # Example values, adjust as needed
+
+        # Crop frame to ROI
+        frame = frame[roi_y:roi_y + roi_height, roi_x:roi_x + roi_width]
 
         #Apply background subtraction
         # Cuse of learning rate, ppl who stand still for longer period of time will not be tracked
@@ -107,11 +118,12 @@ while(True):
         # draw guideline which pixels are checked
         cv2.line(frame, (0,baseLineHeight), (width,baseLineHeight), (0,255,0),thickness=1)
         cv2.line(frame, (0,headLineHeight), (width,headLineHeight), (0,255,0),thickness=1)
+        cv2.line(frame, (0,middleHeight), (width,middleHeight), (255,255,255),thickness=1)
 
         # Draw guideline on the threshold frame as well
         cv2.line(thresh_frame, (0,baseLineHeight), (width,baseLineHeight), (255,255,255),thickness=1)
         cv2.line(thresh_frame, (0,headLineHeight), (width,headLineHeight), (255,255,255),thickness=1)
-        cv2.line(thresh_frame, (0,200), (width,200), (255,255,255),thickness=1)
+        cv2.line(thresh_frame, (0,middleHeight), (width,middleHeight), (255,255,255),thickness=1)
         
 
         # cv2.imshow('frame', frame)
@@ -137,6 +149,3 @@ cap.release()
 # Finally, close the window
 #cv2.destroyAllWindows()
 cv2.waitKey(1)
-
-
-
