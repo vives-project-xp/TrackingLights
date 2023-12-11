@@ -33,12 +33,9 @@ print("Program Started...")
 while(True): 
 
     #Checking two heights for better detection
-    # baseLineHeight = 215
-    # headLineHeight = 181
-
-    baseLineHeight = 35
-    headLineHeight = 45
-    middleHeight = 40
+    baseLineHeight = 215
+    middleHeight = 200
+    headLineHeight = 181
 
 
     #Get active preset
@@ -53,7 +50,6 @@ while(True):
 
         # Capture frame-by-frame
         ret, frame = cap.read()
-        time.sleep(0.1)
         # find best resolution
         width = 600 # *3
         height = 360 # *3
@@ -62,12 +58,6 @@ while(True):
         frame = cv2.resize(frame, (width, height))
         frame = cv2.rotate(frame, cv2.ROTATE_180)
         
-        # Define Region of Interest (ROI)
-        roi_x, roi_y, roi_width, roi_height = 0, 180, 600, 70  # Example values, adjust as needed
-
-        # Crop frame to ROI
-        frame = frame[roi_y:roi_y + roi_height, roi_x:roi_x + roi_width]
-
         #Apply background subtraction
         # Cuse of learning rate, ppl who stand still for longer period of time will not be tracked
         fgmask = fgbg.apply(frame, None, 0.0008) 
@@ -75,20 +65,13 @@ while(True):
         #Blur out the edges
         gray_frame = cv2.GaussianBlur(fgmask, (21,21), 0)  
 
-        # we will assign grayFrame to initalState if is none  
-        if initialState is None:  
-            initialState = gray_frame  
-            continue  
 
         thresh_frame = cv2.threshold(gray_frame, 100, 255, cv2.THRESH_BINARY)[1]  
         thresh_frame = cv2.dilate(thresh_frame, None, iterations = 2)  
                 
 
-        # Create a copy of the 'leds' list
-        pixels = []
-
         for i in range(0,width, 6):
-            if thresh_frame[baseLineHeight][i] >= 127 or thresh_frame[headLineHeight][i] == 255 or thresh_frame[200][i] >= 127 or thresh_frame[200][i] == 255:
+            if thresh_frame[baseLineHeight][i] == 255 or thresh_frame[headLineHeight][i] == 255 or thresh_frame[200][i] == 255:
                 cv2.rectangle(frame, (i-3,baseLineHeight-3), (i+3,baseLineHeight+3), [34,0,255] ,-1)
                 #add detected pixels to list to be later grouped up
                 pixels.append(i)
@@ -126,9 +109,9 @@ while(True):
         cv2.line(thresh_frame, (0,middleHeight), (width,middleHeight), (255,255,255),thickness=1)
         
 
-        # cv2.imshow('frame', frame)
-        # cv2.imshow('threshold', thresh_frame)
-        # cv2.imshow('backgroundDiff', fgmask)
+        cv2.imshow('frame', frame)
+        cv2.imshow('threshold', thresh_frame)
+        cv2.imshow('backgroundDiff', fgmask)
 
         # # Move windows so they are properly placed
         # cv2.moveWindow('frame', 100,100)

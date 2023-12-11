@@ -131,11 +131,6 @@ class MqttController:
 	def getPreset(self): 
 		return self.preset
 
-
-	def preset3(self):
-		print("Patern3")
-		return
-
 	# x-mass tree
 	def preset1(self):
 
@@ -160,12 +155,6 @@ class MqttController:
 			self.mqtt_client.publish(self.api_topic, second)
 			time.sleep(1)
 
-		return
-
-
-
-	def preset2(self):
-		print("Patern2")
 		return
 
 	def preset420(self):
