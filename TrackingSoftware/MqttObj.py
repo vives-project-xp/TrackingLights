@@ -15,7 +15,7 @@ class MqttController:
 
 
 		# PROJECT MASTER COMMANDS
-		self.ProjectMasterTopic = "PM/Aurora/Aurora/"
+		self.ProjectMasterTopic = "PM/Aurora/Aurora"
 
 		#Define mqtt broker
 		broker_address = "projectmaster.devbit.be"
@@ -71,8 +71,6 @@ class MqttController:
 
 		try:
 			received_data = json.loads(message.payload.decode())
-
-
 			# check for correct topic used
 			# Update data based on the received data
 
@@ -113,7 +111,14 @@ class MqttController:
 					self.input['on'] = True
 				else:
 					self.input['on'] = False
-				
+			if 'effect' in received_data:
+				#Tracking
+				if received_data[0] == "0":
+					self.preset = 1
+				#Project master edit
+				if received_data[0] == "1":
+					self.preset = 0
+			
 
 
 		except json.JSONDecodeError as e:
@@ -132,7 +137,7 @@ class MqttController:
 		return self.preset
 
 	# x-mass tree
-	def preset1(self):
+	def preset2(self):
 
 		var = self.resetValues
 		
@@ -148,7 +153,7 @@ class MqttController:
 		
 		second = json.dumps(var)
 
-		while(self.preset == 1):
+		while(self.preset == 2):
 
 			self.mqtt_client.publish(self.api_topic, first)
 			time.sleep(1)
@@ -158,7 +163,6 @@ class MqttController:
 		return
 
 	def default(self):
-		print("preset 0")
 		self.mqttUpdate()
 		return
 

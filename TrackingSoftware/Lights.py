@@ -54,9 +54,6 @@ class Lights:
       first_pixel = apply_exponential_offset(first_pixel)
       last_pixel = apply_exponential_offset(last_pixel)
 
-      print(first_pixel)
-      print(last_pixel)
-
       # Divide by 6 > each segment of leds = 6leds
       first_pixel = int(group[0]/6)
       last_pixel = int(group[len(group)-1]/6)
@@ -84,10 +81,10 @@ class Lights:
     return self.lightsJson
 
 def apply_exponential_offset(x):
-    offset_factor = 20
+    offset_factor = 12 # 2 segments
     width = 600
-    
-    if x < width / 2:
-        return x - offset_factor 
+    # if detection is above half of led strip
+    if x > width / 2:
+        return x + offset_factor 
     else:
         return np.floor(x)

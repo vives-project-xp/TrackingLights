@@ -24,7 +24,7 @@ initialState = None
 switcher = {
     0:mqtt_controller.default,
     1:mqtt_controller.mqttTracking, 
-    2:mqtt_controller.preset1,
+    2:mqtt_controller.preset2,
     
 }
 switcherCount = 3
@@ -50,16 +50,16 @@ while(True):
 
     # if default preset: start video and
     # and change lights if detected movement
+
+    frames += 1
+
+    # Capture frame-by-frame
+    ret, frame = cap.read()
+    # find best resolution
+    width = 600 # *3
+    height = 360 # *3
+    
     if(mqtt_controller_preset == 1):
-        frames += 1
-
-        # Capture frame-by-frame
-        ret, frame = cap.read()
-        # find best resolution
-        width = 600 # *3
-        height = 360 # *3
-        time.sleep(0.01)
-
         #Resize frame
         frame = cv2.resize(frame, (width, height))
         frame = cv2.rotate(frame, cv2.ROTATE_180)
@@ -67,6 +67,9 @@ while(True):
         #Apply background subtraction
         # Cuse of learning rate, ppl who stand still for longer period of time will not be tracked
         fgmask = fgbg.apply(frame, None, 0.0008) 
+
+        if(frames < 300):
+            continue
 
         #Blur out the edges
         gray_frame = cv2.GaussianBlur(fgmask, (17,17), 0)             
@@ -76,6 +79,14 @@ while(True):
 
         for i in range(0,width, 6):
             if thresh_frame[baseLineHeight][i] == 255 or thresh_frame[headLineHeight][i] == 255 or thresh_frame[200][i] == 255:
+                # if detexted pixel is near the edge add filling pixels
+                if i < 12:
+                    pixels.insert(6,0)
+                    pixels.insert(0,0)
+                if i > 588:
+                    pixels.append(594)
+                    pixels.append(600)
+
                 cv2.rectangle(frame, (i-3,baseLineHeight-3), (i+3,baseLineHeight+3), [34,0,255] ,-1)
                 #add detected pixels to list to be later grouped up
                 pixels.append(i)
@@ -113,15 +124,15 @@ while(True):
         cv2.line(thresh_frame, (0,middleHeight), (width,middleHeight), (255,255,255),thickness=1)
         
 
-        # cv2.imshow('frame', frame)
-        # cv2.imshow('gray_frame', gray_frame)
-        # cv2.imshow('threshold', thresh_frame)
-        # cv2.imshow('backgroundDiff', fgmask)
+        cv2.imshow('frame', frame)
+        cv2.imshow('gray_frame', gray_frame)
+        cv2.imshow('threshold', thresh_frame)
+        cv2.imshow('backgroundDiff', fgmask)
 
-        # # Move windows so they are properly placed
-        # cv2.moveWindow('frame', 100,100)
-        # cv2.moveWindow('threshold', 700,100)
-        # cv2.moveWindow('backgroundDiff', 700,560)
+        # Move windows so they are properly placed
+        cv2.moveWindow('frame', 100,100)
+        cv2.moveWindow('threshold', 700,100)
+        cv2.moveWindow('backgroundDiff', 700,560)
 
     else:
         switcher[mqtt_controller_preset]()
