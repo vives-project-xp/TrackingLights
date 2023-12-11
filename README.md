@@ -65,12 +65,22 @@ Files
 3d prints: these contain all our 3d printing files that we used in this project.
 
 LED coding:
-  -LED-coding: 
-  -ledtest:
-  -TM1814:
+  -LED-coding: This is for controlling our LED strip using Adafruit library.
+  -ledtest: This is for the lighting effects.
+  -TM1814: header file for NeoPixel library. provides functions for controlling NeoPixel 
   -wled:
 
-TrackingSoftware: 
+TrackingSoftware:
+  -camerafeed: camerafeed live op html.
+  -mov: testfilmpjes.
+  -gititgnore: (werkt niet)
+  -docker-compose: docker compose (start docker file) (verteld vb te restarten after failure)
+  -dockerfile: docker file zelf (dependencies dowload)
+  -lights: aansturen leds
+  -MqttObj: commu met robbe
+  -MQTT-topicTester: Test MQTT
+  -trackingLight: main project.
+ 
 
 
 How to use the trackinglights:
