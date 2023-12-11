@@ -118,18 +118,24 @@ pin: 2 = data, deze sluit je aan aan de groene wire van LED's
 
 <img width="344" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/f6251401-1f6a-4efd-876b-f74a726a33c1">
 
+2) SD kaart
+-raspberry pi imager de software van keuze installeren. 
 
+3) Aansluiten raspberry pi.
+   
+-Sd kaart aansluiten
 
-2) Aansluiten raspberry pi.
--
-(sd kaart)
-3) Nodige software.
+-Voeding aansluiten
+
+-Camera aansluiten
+
+4) Nodige software.
 
 -get docker.sh runnen (docker dowloaden)
 
 -reposi copieren
 
--camera activeren (voor docker)  
+-camera activeren (voor docker) (moet alleen maar als je pi 4 of ouder is)
 
 -dockercontainer starten (blijft runnen, tot jij afzet)
 
