@@ -98,10 +98,31 @@ TrackingSoftware:
 
 ## How to use the trackinglights:
 --------------------------------------------------------------------------------------------
--get docker.sh runnen
--docker dowload
+1) Het aansluiten van alle hardware.
+   
+-Led strips aansluiten op de 24V voeding (in ons geval x ampere). De ledstrips hebben een wit (ground) en rode (24V)     aansluiting. Je sluit deze parallel aan aan de bron. 
+-Je sluit de 24V bron aan (in ons geval x ampere).
+-Je sluit de ledstrips parallel aan. De ledstrips hebben een witte (ground) en rode (24V) aansluiting
+-Je sluit de 24V-5V converter aan de 24V bron. De 5V uitgang zullen we nodig hebben voor het voeden van onze ESP32
+-Je sluit de ESP32 aan aan de juiste zijde van de ledstrip
+pin: 5V = 5V van converter
+pin: GND = de grounding van de LED's, deze sluit je aan aan de witte wire van LED's
+pin: 2 = data, deze sluit je aan aan de groene wire van LED's
+
+
+
+
+Voor pi
+-
+
+-get docker.sh runnen (docker dowloaden)
 -reposi copieren
 -camera activeren (voor docker)  
+-dockercontainer starten (blijft runnen, tot jij afzet)
+
+
+
+
 
 
 
