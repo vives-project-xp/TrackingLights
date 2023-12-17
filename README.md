@@ -30,7 +30,7 @@ Raspberry pi: This will convert the raw footage from the camera into values, whi
 
 Camera: For the camera we chose the raspberry pi camera V2. The V2 is an 8mp camera with the sony IMX219 sensor, the camera is easy to work with but has potential for more complicated things. This will connect to the raspberry pi.
 
-Power supply raspberry pi: 5V power brick for the raspberry pi
+Power supply raspberry pi: 15W power brick for the raspberry pi
 
 ## Optional hardware:
 ---------------------------------------------------------------------------------------
