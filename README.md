@@ -64,7 +64,11 @@ Docker: This is used to run the python script on the raspberry pi
 ------------------------------------------------------------------
 <img width="460" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/991873ee-3a01-4c94-b453-779dc50f9773">
 
+De ESP32 werkt via WLED library met de leds
 
+De esp krijgt communicatie van de raspberry pi via MQTT
+
+We hebben een camera die met een bedrade connectie met de raspberry pi werkt.
 
 ## Schematics + flowchart:
 ---------------------------------------------------------------------------------------------
