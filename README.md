@@ -108,7 +108,7 @@ dockerfile
 
 #### Ledstrips
 
-In our setup, we have the power source in the middle of the 2 ledstrips. By doing this, we can reduce the power usage to counter the voltage drop. In this case the led's only use about 2A. During testing we also tried to power the led's from one side, however this resulted in a power usage of about 6A.
+In our setup, we have the power source in the middle of the 2 ledstrips. By doing this, we can reduce the power usage to counter the voltage drop. In this case the led's only use about 2A. During testing we also tried to power the led's from one side, however this resulted in a power usage of about 6A. The data line works on a 800KHz frequency.
    
 Connect the 24V power source to the both led strips. The red cable is 24V and the white cable is the GND.  Also connect the 2 connectors of the data cable. 
 
