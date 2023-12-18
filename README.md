@@ -30,7 +30,7 @@ Raspberry pi: This will convert the raw footage from the camera into values, whi
 
 Camera: For the camera we chose the raspberry pi camera V2. The V2 is an 8mp camera with the sony IMX219 sensor, the camera is easy to work with but has potential for more complicated things. This will connect to the raspberry pi.
 
-Power supply raspberry pi: 5V power brick for the raspberry pi
+Power supply raspberry pi: 15W usb-C power brick for the raspberry pi
 
 ## Optional hardware:
 ---------------------------------------------------------------------------------------
@@ -64,7 +64,11 @@ Docker: This is used to run the python script on the raspberry pi
 ------------------------------------------------------------------
 <img width="460" alt="image" src="https://github.com/vives-project-xp/TrackingLights/assets/113900709/991873ee-3a01-4c94-b453-779dc50f9773">
 
+De ESP32 werkt via WLED library met de leds
 
+De esp krijgt communicatie van de raspberry pi via MQTT
+
+We hebben een camera die met een bedrade connectie met de raspberry pi werkt.
 
 ## Schematics + flowchart:
 ---------------------------------------------------------------------------------------------
@@ -104,7 +108,7 @@ dockerfile
 
 #### Ledstrips
 
-In our setup, we have the power source in the middle of the 2 ledstrips. By doing this, we can reduce the power usage to counter the voltage drop. In this case the led's only use about 2A. During testing we also tried to power the led's from one side, however this resulted in a power usage of about 6A.
+In our setup, we have the power source in the middle of the 2 ledstrips. By doing this, we can reduce the power usage to counter the voltage drop. In this case the led's only use about 2A. During testing we also tried to power the led's from one side, however this resulted in a power usage of about 6A. The data line works on a 800KHz frequency.
    
 Connect the 24V power source to the both led strips. The red cable is 24V and the white cable is the GND.  Also connect the 2 connectors of the data cable. 
 
